@@ -1,19 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "EcoSwachh",
-  description:
-    "Empowering waste management with smart solutions for a cleaner, digital India, supporting Swachh Bharat Abhiyan's vision.",
-};
 
 export default function RootLayout({
   children,
