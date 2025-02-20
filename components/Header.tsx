@@ -221,14 +221,14 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="mr-2 md:mr-4"
+            className="mr-2 md:mr-4 lg:hidden"
             onClick={onMenuClick}
           >
             <Menu className="h-6 w-6 text-gray-800" />
           </Button>
           <Link href="/" className="flex items-center">
             <Leaf className="h-6 w-6 md:h-8 md:w-8 text-green-500 mr-1 md:mr-2" />
-            <span className="font-bold text-base md:text-lg text-gray-800">
+            <span className="font-bold text-base md:text-lg text-gray-800 max-md:hidden">
               Eco Swachh
             </span>
           </Link>
@@ -247,7 +247,11 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
         )}
         <div className="flex items-center">
           {isMobile && (
-            <Button variant="ghost" size="icon" className="mr2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="mr-2 max-[360px]:hidden"
+            >
               <Search className="w-5 h-5" />
             </Button>
           )}
