@@ -234,7 +234,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
           </Link>
         </div>
         {!isMobile && (
-          <div className="flex-1 max-w-xl mx-4">
+          <div className="flex-1 max-w-xl mx-4 hidden">
             <div className="relative">
               <input
                 type="text"
