@@ -247,11 +247,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
         )}
         <div className="flex items-center">
           {isMobile && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="mr-2 max-[360px]:hidden"
-            >
+            <Button variant="ghost" size="icon" className="mr-2 hidden">
               <Search className="w-5 h-5" />
             </Button>
           )}
