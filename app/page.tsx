@@ -1,12 +1,4 @@
-import {
-  ArrowRight,
-  Leaf,
-  Recycle,
-  Users,
-  Coins,
-  MapPin,
-  ChevronRight,
-} from "lucide-react";
+import { Leaf, Recycle, Users, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -17,7 +9,7 @@ function AnimatedGlobe() {
       <div className="absolute inset-2 rounded-full bg-green-400 opacity-40 animate-ping" />
       <div className="absolute inset-4 rounded-full bg-green-300 opacity-60 animate-spin" />
       <div className="absolute inset-6 rounded-full bg-green-200 opacity-80 animate-bounce" />
-      <Leaf className="absolute inset-0 m-auto h-16 w-16 text-green-600 animate-pulse" />
+      <Recycle className="absolute inset-0 m-auto h-16 w-16 text-green-600 animate-pulse" />
     </div>
   );
 }
@@ -77,9 +69,11 @@ export default function Home() {
           Transforming waste management with digital innovation for a cleaner,
           smarter, and sustainable India under the Swachh Bharat initiative.
         </p>
-        <Button className="bg-green-600 hover:bg-green-700 transition-all text-sm md:text-lg py-4 md:py-6 px-7 md:px-10 rounded-full">
-          Report Waste
-        </Button>
+        <Link href="/report">
+          <Button className="bg-green-600 hover:bg-green-700 transition-all text-sm md:text-lg py-4 md:py-6 px-7 md:px-10 rounded-full">
+            Report Waste
+          </Button>
+        </Link>
       </section>
 
       <section className="grid md:grid-cols-3 gap-6 mb-20">
@@ -98,18 +92,6 @@ export default function Home() {
           title="Community Driven"
           description="Be part of a growing community committed to sustainability practices"
         />
-      </section>
-
-      <section className="bg-white p-10 rounded-3xl shadow-lg mb-20">
-        <h2 className="text-2xl md:text-4xl font-bold mb-12 text-center text-gray-800">
-          Our Impact
-        </h2>
-        <div className="grid md:grid-cols-4 gap-4">
-          <ImpactCard title="Waste Collected" value={"20 Kg"} icon={Recycle} />
-          <ImpactCard title="Report Submitted" value={30} icon={MapPin} />
-          <ImpactCard title="Tokens Earned" value={200} icon={Coins} />
-          <ImpactCard title="Co2 Offset" value={"50 kg"} icon={Leaf} />
-        </div>
       </section>
     </div>
   );
