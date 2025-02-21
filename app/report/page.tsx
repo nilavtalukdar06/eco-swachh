@@ -229,6 +229,7 @@ export default function Report() {
         }));
         setReports(formattedReports);
       } else {
+        toast.error("Log in first");
         router.push("/");
       }
     };
