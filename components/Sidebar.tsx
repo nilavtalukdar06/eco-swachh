@@ -1,7 +1,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { MapPin, Trash, Coins, Medal, Settings, Home, Car } from "lucide-react";
+import {
+  MapPin,
+  Trash,
+  Coins,
+  Medal,
+  Settings,
+  Home,
+  HandCoins,
+} from "lucide-react";
 
 const sidebarItems = [
   { href: "/", icon: Home, label: "Home" },
@@ -43,17 +51,17 @@ export default function Sidebar({ open }: SidebarProps) {
           ))}
         </div>
         <div className="p-4 border-t border-gray-200">
-          <Link href="/settings" passHref>
+          <Link href="/donateus" passHref>
             <Button
-              variant={pathname === "/settings" ? "secondary" : "outline"}
+              variant={pathname === "/donateus" ? "secondary" : "outline"}
               className={`w-full py-3 ${
-                pathname === "/settings"
+                pathname === "/donateus"
                   ? "bg-green-100 text-green-800"
                   : "text-gray-600 border-gray-300 hover:bg-gray-100"
               }`}
             >
-              <Settings className="mr-3 h-5 w-5" />
-              <span className="text-base">Settings</span>
+              <HandCoins className="mr-3 h-5 w-5" />
+              <span className="text-base">Donate Us</span>
             </Button>
           </Link>
         </div>
