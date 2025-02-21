@@ -7,7 +7,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +17,7 @@ export default function PaymentForm() {
       name: "",
       email: "",
       message: "",
-      amount: 0,
+      amount: 100,
     },
   });
 
@@ -35,7 +34,17 @@ export default function PaymentForm() {
         </p>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          className="space-y-6"
+          action="https://api.web3forms.com/submit"
+          method="POST"
+        >
+          {/* Ensure the hidden value is defined */}
+          <input
+            type="hidden"
+            name="access_key"
+            value={process.env.NEXT_PUBLIC_CONTACT_FORM}
+          />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -89,7 +98,12 @@ export default function PaymentForm() {
               <FormItem>
                 <FormLabel>Amount (INR)</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="Enter amount" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 </FormControl>
               </FormItem>
             )}
