@@ -36,9 +36,7 @@ import {
 } from "@/utils/db/actions";
 import { useMediaQuery } from "@/hook/useMediaQuery";
 
-const clientId = "BJKdDFkNtkWX87XqkuWrDu4rbkSvWyQZ5lswS0ucINxxcN0inRVW8zzKAywPPzgiOHP7_3PcfFwfpvcQvSdaLRs";
-// const clientId =
-//   "BIwCnefgaQvBB7g-qFDysOeerK7oWv-LemkPrB13zuyWMfCYsCeoNeoC-zFVZkO1toExYCc1A3UMlw_smuYP7n8";
+const clientId = process.env.NEXT_PUBLIC_WEB3_AUTH_CLIENT_ID;
 
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -57,7 +55,7 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 
 const web3Auth = new Web3Auth({
   clientId,
-  web3AuthNetwork: WEB3AUTH_NETWORK.TESTNET,
+  web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
   privateKeyProvider,
 });
 
