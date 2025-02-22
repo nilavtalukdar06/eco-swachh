@@ -154,20 +154,18 @@ export default function collectPage() {
         {
           inlineData: {
             data: base64Data,
-            mimeType: "image/jpeg", // Adjust this if you know the exact type
+            mimeType: "image/jpeg",
           },
         },
       ];
 
       const prompt = `You are an expert in waste management and recycling. Analyze this image and provide:
         1. Confirm if the waste type matches: ${selectedTask.wasteType}
-        2. Estimate if the quantity matches: ${selectedTask.amount}
-        3. Your confidence level in this assessment (as a percentage)
+        Provide your confidence level in this assessment (as a percentage)
         
         Respond in JSON format like this:
         {
           "wasteTypeMatch": true/false,
-          "quantityMatch": true/false,
           "confidence": confidence level as a number between 0 and 1
         }`;
 
@@ -175,20 +173,18 @@ export default function collectPage() {
       const response = result.response;
       const text = response.text();
       const jsonString = text.replace(/```json\s*|```/g, "").trim();
+
       try {
         const parsedResult = JSON.parse(jsonString);
         setVerificationResult({
           wasteTypeMatch: parsedResult.wasteTypeMatch,
-          quantityMatch: parsedResult.quantityMatch,
+          // Keeping quantityMatch for display, but it is no longer used for verification
+          quantityMatch: parsedResult.quantityMatch ?? false,
           confidence: parsedResult.confidence,
         });
         setVerificationStatus("success");
 
-        if (
-          parsedResult.wasteTypeMatch &&
-          parsedResult.quantityMatch &&
-          parsedResult.confidence > 0.7
-        ) {
+        if (parsedResult.wasteTypeMatch && parsedResult.confidence > 0.7) {
           await handleStatusChange(selectedTask.id, "verified");
           const earnedReward = Math.floor(Math.random() * 50) + 10; // Random reward between 10 and 59
 
@@ -208,7 +204,7 @@ export default function collectPage() {
           );
         } else {
           toast.error(
-            "Verification failed. The collected waste does not match the reported waste.",
+            "Verification failed. The waste type does not match the reported waste.",
             {
               duration: 5000,
               position: "top-center",
@@ -216,8 +212,6 @@ export default function collectPage() {
           );
         }
       } catch (error) {
-        console.log(error);
-
         console.error("Failed to parse JSON response:", text);
         setVerificationStatus("failure");
       }
