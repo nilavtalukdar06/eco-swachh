@@ -39,6 +39,7 @@ function AnimatedGlobe() {
 
 export default function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [impactData, setImpactData] = useState({
     wasteCollected: 0,
     reportsSubmitted: 0,
@@ -81,6 +82,8 @@ export default function Home() {
           tokensEarned: 0,
           co2Offset: 0,
         });
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -146,22 +149,26 @@ export default function Home() {
         <div className="grid md:grid-cols-4 gap-6">
           <ImpactCard
             title="Waste Collected"
-            value={`${impactData.wasteCollected} kg`}
+            value={isLoading ? "Loading..." : `${impactData.wasteCollected} kg`}
             icon={Recycle}
           />
           <ImpactCard
             title="Reports Submitted"
-            value={impactData.reportsSubmitted.toString()}
+            value={
+              isLoading ? "Loading..." : impactData.reportsSubmitted.toString()
+            }
             icon={MapPin}
           />
           <ImpactCard
             title="Tokens Earned"
-            value={impactData.tokensEarned.toString()}
+            value={
+              isLoading ? "Loading..." : impactData.tokensEarned.toString()
+            }
             icon={Coins}
           />
           <ImpactCard
             title="CO2 Offset"
-            value={`${impactData.co2Offset} kg`}
+            value={isLoading ? "Loading..." : `${impactData.co2Offset} kg`}
             icon={Leaf}
           />
         </div>
