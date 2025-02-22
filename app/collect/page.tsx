@@ -263,8 +263,8 @@ export default function collectPage() {
                 className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
               >
                 <div className="flex justify-between items-center mb-2">
-                  <h2 className="text-lg font-medium text-gray-800 flex items-center">
-                    <MapPin className="w-5 h-5 mr-2 text-gray-500" />
+                  <h2 className="text-xs md:text-lg font-medium text-gray-800 flex items-center mr-2">
+                    <MapPin className="w-5 h-5 mr-2 text-gray-500 max-sm:hidden" />
                     {task.location}
                   </h2>
                   <StatusBadge status={task.status} />
@@ -468,7 +468,7 @@ function StatusBadge({ status }: { status: CollectionTask["status"] }) {
     <span
       className={`px-2 py-1 rounded-full text-xs font-medium ${color} flex items-center`}
     >
-      <Icon className="mr-1 h-3 w-3" />
+      <Icon className="mr-1 h-3 w-3 max-sm:hidden" />
       {status.replace("_", " ")}
     </span>
   );
