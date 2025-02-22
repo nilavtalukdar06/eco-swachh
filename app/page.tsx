@@ -90,10 +90,6 @@ export default function Home() {
     fetchImpactData();
   }, []);
 
-  const login = () => {
-    setLoggedIn(true);
-  };
-
   return (
     <div className={`container mx-auto px-4 py-16 ${poppins.className}`}>
       <section className="text-center mb-20">
@@ -106,22 +102,13 @@ export default function Home() {
           Transforming waste management with digital innovation for a cleaner,
           smarter, and sustainable India under the Swachh Bharat initiative.
         </p>
-        {!loggedIn ? (
-          <Button
-            onClick={login}
-            className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-10 rounded-full font-medium transition-all duration-300 ease-in-out transform hover:scale-105"
-          >
-            Get Started
+
+        <Link href="/report">
+          <Button className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-10 rounded-full font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
+            Report Waste
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-        ) : (
-          <Link href="/report">
-            <Button className="bg-green-600 hover:bg-green-700 text-white text-lg py-6 px-10 rounded-full font-medium transition-all duration-300 ease-in-out transform hover:scale-105">
-              Report Waste
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
-        )}
+        </Link>
       </section>
 
       <section className="grid md:grid-cols-3 gap-10 mb-20">
@@ -142,11 +129,11 @@ export default function Home() {
         />
       </section>
 
-      <section className="bg-white p-10 rounded-3xl shadow-lg mb-20">
+      <section className="bg-white p-10 rounded-3xl shadow-lg mb-5">
         <h2 className="text-4xl font-bold mb-12 text-center text-gray-800">
           Our Impact
         </h2>
-        <div className="grid md:grid-cols-4 gap-6">
+        <div className="flex flex-wrap gap-6">
           <ImpactCard
             title="Waste Collected"
             value={isLoading ? "Loading..." : `${impactData.wasteCollected} kg`}
@@ -158,13 +145,6 @@ export default function Home() {
               isLoading ? "Loading..." : impactData.reportsSubmitted.toString()
             }
             icon={MapPin}
-          />
-          <ImpactCard
-            title="Tokens Earned"
-            value={
-              isLoading ? "Loading..." : impactData.tokensEarned.toString()
-            }
-            icon={Coins}
           />
           <ImpactCard
             title="CO2 Offset"
@@ -192,7 +172,7 @@ function ImpactCard({
       : value;
 
   return (
-    <div className="p-6 rounded-xl bg-gray-50 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-md">
+    <div className="p-6 flex-1 rounded-xl bg-gray-50 border border-gray-100 transition-all duration-300 ease-in-out hover:shadow-md">
       <Icon className="h-10 w-10 text-green-500 mb-4" />
       <p className="text-3xl font-bold mb-2 text-gray-800">{formattedValue}</p>
       <p className="text-sm text-gray-600">{title}</p>
