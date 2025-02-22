@@ -95,11 +95,11 @@ export default function Home() {
     <div className={`container mx-auto px-4 py-16 ${poppins.className}`}>
       <section className="text-center mb-20">
         <AnimatedGlobe />
-        <h1 className="text-6xl font-bold mb-6 text-gray-800 tracking-tight">
+        <h1 className="text-3xl md:text-6xl font-bold mb-6 text-gray-800 tracking-tight">
           Eco Swachh <br />
           <span className="text-green-600">Empowering a Clean India</span>
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
+        <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed mb-8">
           Transforming waste management with digital innovation for a cleaner,
           smarter, and sustainable India under the Swachh Bharat initiative.
         </p>
