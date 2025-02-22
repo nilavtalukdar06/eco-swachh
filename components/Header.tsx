@@ -248,43 +248,47 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
               <Search className="w-5 h-5" />
             </Button>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2 relative">
-                <Bell className="h-5 w-5" />
-                {notification.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 px-1 min-w-[1.2rem] h-5">
-                    {notification.length}
-                  </Badge>
+          {loggedIn && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="mr-2 relative">
+                  <Bell className="h-5 w-5" />
+                  {notification.length > 0 && (
+                    <Badge className="absolute -top-1 -right-1 px-1 min-w-[1.2rem] h-5">
+                      {notification.length}
+                    </Badge>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                {notification.length > 0 ? (
+                  notification.map((notification: any) => (
+                    <DropdownMenuItem
+                      key={notification.id}
+                      onClick={() => handleNotificationClick(notification.id)}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{notification.type}</span>
+                        <span className="text-sm text-gray-500">
+                          {notification.message}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))
+                ) : (
+                  <DropdownMenuItem>No new notifications</DropdownMenuItem>
                 )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
-              {notification.length > 0 ? (
-                notification.map((notification: any) => (
-                  <DropdownMenuItem
-                    key={notification.id}
-                    onClick={() => handleNotificationClick(notification.id)}
-                  >
-                    <div className="flex flex-col">
-                      <span className="font-medium">{notification.type}</span>
-                      <span className="text-sm text-gray-500">
-                        {notification.message}
-                      </span>
-                    </div>
-                  </DropdownMenuItem>
-                ))
-              ) : (
-                <DropdownMenuItem>No new notifications</DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className="mr-2 md:mr-4 flex items-center bg-gray-100 rounded-full px-2 md:px-3 py-1">
-            <Coins className="h-4 w-4 md:h-5 md:w-5 mr-1 text-green-500" />
-            <span className="font-semibold text-sm md:text-base text-gray-800">
-              {balance.toFixed(2)}
-            </span>
-          </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {loggedIn && (
+            <div className="mr-2 md:mr-4 flex items-center bg-gray-100 rounded-full px-2 md:px-3 py-1">
+              <Coins className="h-4 w-4 md:h-5 md:w-5 mr-1 text-green-500" />
+              <span className="font-semibold text-sm md:text-base text-gray-800">
+                {balance.toFixed(2)}
+              </span>
+            </div>
+          )}
           {!loggedIn ? (
             <Button
               onClick={login}
