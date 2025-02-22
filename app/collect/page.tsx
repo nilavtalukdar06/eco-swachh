@@ -425,7 +425,7 @@ export default function collectPage() {
                   Waste Type Match:{" "}
                   {verificationResult.wasteTypeMatch ? "Yes" : "No"}
                 </p>
-                <p>
+                <p className="hidden">
                   Quantity Match:{" "}
                   {verificationResult.quantityMatch ? "Yes" : "No"}
                 </p>
