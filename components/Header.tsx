@@ -74,6 +74,23 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
   const [balance, setBalance] = useState(0);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  const initializeUser = async (userInfo: any) => {
+    if (!userInfo?.email) return;
+
+    try {
+      localStorage.setItem("userEmail", userInfo.email);
+      const existingUser = await getUserByEmail(userInfo.email);
+
+      if (!existingUser) {
+        await createUser(userInfo.email, userInfo.name || "Guest User");
+      }
+
+      return existingUser;
+    } catch (error) {
+      console.error("Error initializing user:", error);
+    }
+  };
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -83,14 +100,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
           setLoggedIn(true);
           const user = await web3Auth.getUserInfo();
           setUserInfo(user);
-          if (user.email) {
-            localStorage.setItem("userEmail", user.email);
-            try {
-              await createUser(user.email, user.name || "Test User");
-            } catch (error) {
-              console.error(error);
-            }
-          }
+          await initializeUser(user);
         }
       } catch (error) {
         console.error(`Error initializing web3auth ${error}`);
@@ -158,14 +168,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
       setLoggedIn(true);
       const user = await web3Auth.getUserInfo();
       setUserInfo(user);
-      if (user.email) {
-        localStorage.setItem("userEmail", user.email);
-        try {
-          await createUser(user.email, user.name || "Guest User");
-        } catch (error) {
-          console.error(error);
-        }
-      }
+      await initializeUser(user);
     } catch (error) {
       console.error(error);
     }
@@ -191,15 +194,7 @@ export default function Header({ onMenuClick, totalEarnings }: HeaderProps) {
     if (web3Auth.connected) {
       const user = await web3Auth.getUserInfo();
       setUserInfo(user);
-
-      if (user.email) {
-        localStorage.setItem("userEmail", user.email);
-        try {
-          await createUser(user.email, user.name || "Guest User");
-        } catch (error) {
-          console.error(error);
-        }
-      }
+      // No need to create user here as it's handled by initializeUser
     }
   };
 
