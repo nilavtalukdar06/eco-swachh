@@ -37,7 +37,7 @@ export default function PaymentForm() {
 
   const handlePayment = async () => {
     setIsProcessing(true);
-    const amount = Number(getValues("amount")) || 1; // dynamically get user amount
+    const amount = Number(getValues("amount")) || 1; 
 
     try {
       const response = await fetch("/api/create-order", {
