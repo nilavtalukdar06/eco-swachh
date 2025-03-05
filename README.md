@@ -23,6 +23,7 @@ Eco Swachh is an innovative digital platform that transforms waste management un
 ## 🚀 Features
 
 ### For Users
+
 - 📱 Real-time waste reporting with location tracking
 - 🤖 AI-powered waste verification using Google Gemini
 - 💰 Reward points system for waste management contributions
@@ -30,12 +31,14 @@ Eco Swachh is an innovative digital platform that transforms waste management un
 - 🎯 Leaderboard for community engagement
 
 ### For Collectors
+
 - 🗺️ Location-based waste collection task management
 - ✅ Verification system for completed collections
 - 📸 Photo evidence submission and AI verification
 - 💎 Token rewards for verified collections
 
 ### For Platform
+
 - 📊 Analytics dashboard for waste management insights
 - 🔄 Automated reward distribution system
 - 🌐 Blockchain-based transaction tracking
@@ -79,35 +82,35 @@ graph TD
     User -->|Login| Auth
     Collector -->|Login| Auth
     Auth -->|Verify| DB
-    
+
     User -->|Submit Report| WR
     WR -->|Store Images| Images
     WR -->|Analyze| AI
     AI -->|Verification Result| VP
     VP -->|Store Result| DB
-    
+
     Collector -->|View Tasks| DB
     Collector -->|Update Collection| VP
     VP -->|Trigger| RP
-    
+
     RP -->|Update Points| DB
     RP -->|Issue Tokens| Smart
     Smart -->|Manage Rewards| Token
-    
+
     DB -->|Feed Data| Analytics
     Analytics -->|Display| Admin
-    
+
     Notify -->|Push| Mobile
     Notify -->|Alert| Web
-    
+
     DB <-->|Cache Data| Cache
-    
+
     subgraph Integration["External Integration"]
         Maps[Google Maps API]
         Payment[Payment Gateway]
         Weather[Weather API]
     end
-    
+
     WR -->|Location Data| Maps
     RP -->|Process Payment| Payment
     WR -->|Weather Check| Weather
@@ -128,16 +131,16 @@ erDiagram
     USERS ||--o{ COLLECTED_WASTE : "collects"
     USERS ||--o{ NOTIFICATIONS : "receives"
     USERS ||--o{ TRANSACTIONS : "has"
-    
+
     REPORTS ||--o{ COLLECTED_WASTE : "becomes"
-    
+
     USERS {
         int id PK
         string email
         string name
         timestamp created_at
     }
-    
+
     REPORTS {
         int id PK
         int user_id FK
@@ -150,7 +153,7 @@ erDiagram
         timestamp created_at
         int collector_id FK
     }
-    
+
     REWARDS {
         int id PK
         int user_id FK
@@ -162,7 +165,7 @@ erDiagram
         string name
         string collection_info
     }
-    
+
     COLLECTED_WASTE {
         int id PK
         int report_id FK
@@ -170,7 +173,7 @@ erDiagram
         timestamp collection_date
         string status
     }
-    
+
     NOTIFICATIONS {
         int id PK
         int user_id FK
@@ -179,7 +182,7 @@ erDiagram
         boolean is_read
         timestamp created_at
     }
-    
+
     TRANSACTIONS {
         int id PK
         int user_id FK
@@ -193,6 +196,7 @@ erDiagram
 ## 🛠️ Tech Stack
 
 ### Frontend Technologies
+
 - **Next.js 14** - React framework with server-side rendering
 - **TypeScript** - Static type checking
 - **Tailwind CSS** - Utility-first styling
@@ -202,6 +206,7 @@ erDiagram
 - **Toast** - User notifications
 
 ### Backend & Database
+
 - **Drizzle ORM** - Type-safe database operations
 - **PostgreSQL** - Primary database (via Neon)
 - **Google AI (Gemini)** - AI-powered waste verification
@@ -209,6 +214,7 @@ erDiagram
 - **Razorpay** - Payment processing
 
 ### Development & DevOps
+
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Husky** - Git hooks
@@ -225,22 +231,26 @@ erDiagram
 ## 🚀 Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/yourusername/eco-swachh.git
 cd eco-swachh
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env.local
 ```
 
 4. Configure environment variables:
+
 ```env
 DATABASE_URL=your_postgres_url
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
@@ -251,11 +261,13 @@ RAZORPAY_KEY_SECRET=your_razorpay_secret
 ```
 
 5. Initialize the database:
+
 ```bash
 npm run db:push
 ```
 
 6. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -283,19 +295,19 @@ eco-swachh/
 ### Waste Management Endpoints
 
 ```typescript
-POST /api/reports
-GET /api/reports
-POST /api/collect
-POST /api/verify
-GET /api/rewards
+POST / api / reports;
+GET / api / reports;
+POST / api / collect;
+POST / api / verify;
+GET / api / rewards;
 ```
 
 ### Authentication Endpoints
 
 ```typescript
-POST /api/auth/login
-POST /api/auth/logout
-GET /api/auth/user
+POST / api / auth / login;
+POST / api / auth / logout;
+GET / api / auth / user;
 ```
 
 ## 🤝 Contributing
