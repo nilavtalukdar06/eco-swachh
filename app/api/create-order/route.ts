@@ -1,5 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import arcjet, { tokenBucket } from "@arcjet/next";
 import Razorpay from "razorpay";
+
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!, // Get your site key from https://app.arcjet.com
+  characteristics: ["ip"], // Track requests based on the client's IP address
+  rules: [
+    tokenBucket({
+      mode: "LIVE", // Will block requests. Use "DRY_RUN" to log only
+      refillRate: 5, // Refill 5 tokens per interval
+      interval: 10, // Refill every 10 seconds
+      capacity: 10, // Bucket maximum capacity of 10 tokens
+    }),
+  ],
+});
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,
@@ -7,6 +21,22 @@ const razorpay = new Razorpay({
 });
 
 export async function POST(request: NextRequest) {
+  const ipAddress = request.headers.get("x-forwarded-for");
+  if (!ipAddress) {
+    return NextResponse.json(
+      { error: "Unable to detect IP address" },
+      { status: 400 }
+    );
+  }
+  const decision = await aj.protect(request, { ip: ipAddress, requested: 5 }); // Deduct 5 tokens from the bucket
+  if (decision.isDenied()) {
+    return NextResponse.json(
+      { error: "Too Many Requests", reason: decision.reason },
+      { status: 429 }
+    );
+  }
+
+  console.log("Arcjet decision", decision);
   try {
     const { amount } = await request.json();
     // Use the provided amount or fallback to 1
