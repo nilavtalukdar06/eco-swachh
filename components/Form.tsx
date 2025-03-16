@@ -80,7 +80,7 @@ export default function PaymentForm() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-8 space-y-8 border rounded-lg shadow-lg bg-background">
+    <div className="max-w-2xl mx-auto p-8 space-y-8 rounded-lg shadow-lg bg-background">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       <div className="space-y-2">
         <h2 className="text-3xl font-bold">Donate Us</h2>
