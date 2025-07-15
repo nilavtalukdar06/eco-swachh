@@ -41,7 +41,7 @@ const clientId = process.env.NEXT_PUBLIC_WEB3_AUTH_CLIENT_ID;
 const chainConfig = {
   chainNamespace: CHAIN_NAMESPACES.EIP155,
   chainId: "0xaa36a7",
-  rpcTarget: "https://rpc.ankr.com/eth_sepolia",
+  rpcTarget: `https://rpc.ankr.com/eth_sepolia/${process.env.NEXT_PUBLIC_ANKR_API_KEY}`,
   displayName: "Sepolia Testnet",
   blockExplorerUrl: "https://sepolia.etherscan.io", //saves the transaction history for all the network
   ticker: "ETH", //symbol used to represent the network
