@@ -17,7 +17,7 @@ coverage
 
 # Turbo
 .turbo
-
+packages/database/generated
 # Vercel
 .vercel
 
