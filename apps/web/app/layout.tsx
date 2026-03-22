@@ -1,8 +1,9 @@
-import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 
 import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
+import { TRPCReactProvider } from "@/dal/client";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -30,9 +31,11 @@ export default function RootLayout({
         jetbrainsMono.variable,
       )}
     >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <TRPCReactProvider>
+        <body>
+          <ThemeProvider>{children}</ThemeProvider>
+        </body>
+      </TRPCReactProvider>
     </html>
   );
 }
