@@ -4,6 +4,7 @@ import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
 import { TRPCReactProvider } from "@/dal/client";
+import { Toaster } from "@workspace/ui/components/sonner";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
       <TRPCReactProvider>
         <body>
           <ThemeProvider>{children}</ThemeProvider>
+          <Toaster />
         </body>
       </TRPCReactProvider>
     </html>

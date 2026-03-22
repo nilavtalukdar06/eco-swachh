@@ -21,6 +21,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRegister } from "../hooks/use-auth";
+import { Spinner } from "@workspace/ui/components/spinner";
 
 const formSchema = z.object({
   fullName: z
@@ -35,6 +37,7 @@ export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { isLoading, registerWithEmail } = useRegister();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,8 +47,12 @@ export function RegisterForm({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.table(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await registerWithEmail({
+      name: values.fullName,
+      email: values.email,
+      password: values.password,
+    });
   }
 
   return (
@@ -117,8 +124,9 @@ export function RegisterForm({
                 )}
               />
               <Field>
-                <Button type="submit" className="w-full">
-                  Register
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Loading..." : "Register"}
+                  {isLoading && <Spinner />}
                 </Button>
                 <FieldDescription className="text-center">
                   Already have an account? <Link href="/auth/login">Login</Link>

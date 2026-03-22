@@ -21,6 +21,8 @@ import Link from "next/link";
 import { z } from "zod";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useLogin } from "../hooks/use-auth";
+import { Spinner } from "@workspace/ui/components/spinner";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Email is not valid" }),
@@ -31,6 +33,7 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { isLoading, loginWithEmail } = useLogin();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,8 +42,11 @@ export function LoginForm({
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.table(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await loginWithEmail({
+      email: values.email,
+      password: values.password,
+    });
   }
 
   return (
@@ -48,9 +54,7 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back Admin</CardTitle>
-          <CardDescription>
-            Login to your account
-          </CardDescription>
+          <CardDescription>Login to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -94,11 +98,13 @@ export function LoginForm({
                 )}
               />
               <Field>
-                <Button type="submit" className="w-full">
-                  Login
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? "Loading..." : "Login"}
+                  {isLoading && <Spinner />}
                 </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <Link href="/auth/register">Register</Link>
+                  Don&apos;t have an account?{" "}
+                  <Link href="/auth/register">Register</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
