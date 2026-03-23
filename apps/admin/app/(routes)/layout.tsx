@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import React from "react";
 import { SidebarProvider } from "@workspace/ui/components/sidebar";
 import { AppSidebar } from "@/components/shared/sidebar";
+import { Navbar } from "@/components/shared/navbar";
 
 export default async function Layout({
   children,
@@ -19,7 +20,10 @@ export default async function Layout({
   return (
     <SidebarProvider>
       <AppSidebar />
-      <React.Fragment>{children}</React.Fragment>
+      <div className="w-full">
+        <Navbar />
+        <section>{children}</section>
+      </div>
     </SidebarProvider>
   );
 }

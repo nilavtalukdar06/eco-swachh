@@ -12,7 +12,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,7 +49,6 @@ export function AppSidebar() {
                 />
               </Link>
             </SidebarMenuButton>
-            <SidebarTrigger className="group-data-[collapsible=icon]:hidden" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
