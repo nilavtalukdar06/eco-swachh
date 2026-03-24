@@ -7,16 +7,24 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ComplaintStatus {
+  PENDING
+  RESOLVED
+}
+
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
+  id                 String             @id
+  name               String
+  email              String
+  emailVerified      Boolean            @default(false)
+  image              String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  sessions           Session[]
+  accounts           Account[]
+  complaints         Complaint[]
+  archivedComplaints ComplaintArchive[]
+  resolvedComplaints ComplaintComment[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -75,4 +83,45 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Complaint {
+  id                 String            @id @default(uuid())
+  userId             String
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title              String
+  description        String
+  status             ComplaintStatus   @default(PENDING)
+  isArchived         Boolean           @default(false)
+  deletedForAdmin    Boolean           @default(false)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  resolvedAt         DateTime
+  archiveComplaints  ComplaintArchive?
+  resolvedComplaints ComplaintComment?
+
+  @@index([userId, status])
+  @@index([deletedForAdmin, isArchived])
+  @@map("complaint")
+}
+
+model ComplaintArchive {
+  id          String    @id @default(uuid())
+  complaintId String    @unique
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  adminId     String
+  archivedBy  User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ComplaintComment {
+  id          String    @id @default(uuid())
+  complaintId String    @unique
+  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
+  adminId     String
+  resolvedBy  User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  comment     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
