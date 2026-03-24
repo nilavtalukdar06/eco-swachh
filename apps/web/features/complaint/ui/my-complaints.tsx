@@ -36,6 +36,7 @@ import { MdMoreHoriz } from "react-icons/md";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { useTheme } from "next-themes";
 
 export const statusParser = parseAsStringEnum(["PENDING", "RESOLVED"]);
 export const cursorParser = parseAsString;
@@ -114,6 +115,7 @@ export function MyComplaints() {
 export function ComplaintCard({ complaint }: { complaint: Complaint }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+  const { theme } = useTheme();
   const mutation = useMutation(
     trpc.complaints.delete.mutationOptions({
       onSuccess: () => {
@@ -138,8 +140,12 @@ export function ComplaintCard({ complaint }: { complaint: Complaint }) {
             className={cn(
               "w-fit h-fit p-1 text-xs",
               complaint.status === "PENDING"
-                ? "text-red-500 bg-red-50"
-                : "text-green-500 bg-green-50",
+                ? theme === "dark"
+                  ? "text-red-500 bg-red-950"
+                  : "text-red-500 bg-red-50"
+                : theme === "dark"
+                  ? "text-green-500 bg-green-950"
+                  : "text-green-500 bg-green-50",
             )}
           >
             <p>{complaint.status}</p>
