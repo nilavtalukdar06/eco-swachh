@@ -30,4 +30,15 @@ export const complaintRouter = createTRPCRouter({
         complaintId: result.id,
       };
     }),
+  getAll: protectedProcedure.query(async (otps) => {
+    const result = await prisma.complaint.findMany({
+      where: {
+        userId: otps.ctx.user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return result;
+  }),
 });
