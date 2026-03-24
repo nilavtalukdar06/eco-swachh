@@ -1,20 +1,39 @@
 import { getQueryClient, trpc } from "@/dal/server";
 import { AddComplaint } from "@/features/complaint/ui/add-complaint";
-import { MyComplaints } from "@/features/complaint/ui/my-complaints";
+import {
+  MyComplaints,
+  statusParser,
+  cursorParser,
+} from "@/features/complaint/ui/my-complaints";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ErrorBoundary } from "react-error-boundary";
 import { Suspense } from "react";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import { createSearchParamsCache } from "nuqs/server";
 
-export default async function ComplaintPage() {
-  const result = await auth.api.getSession({
-    headers: await headers(),
-  });
+const searchParamsCache = createSearchParamsCache({
+  status: statusParser,
+  cursor: cursorParser,
+});
+
+export default async function ComplaintPage({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const result = await auth.api.getSession({ headers: await headers() });
   const queryClient = getQueryClient();
+  
   if (result?.session) {
-    void queryClient.prefetchQuery(trpc.complaints.getAll.queryOptions());
+    const { status, cursor } = searchParamsCache.parse(searchParams);
+    void queryClient.prefetchQuery(
+      trpc.complaints.getAll.queryOptions({
+        status: status ?? undefined,
+        cursor: cursor ?? undefined,
+      }),
+    );
   }
 
   return (
