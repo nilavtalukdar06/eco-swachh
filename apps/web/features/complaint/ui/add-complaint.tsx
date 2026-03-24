@@ -1,6 +1,8 @@
 "use client";
 
+import { useTRPC } from "@/dal/client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -19,8 +21,11 @@ import {
   FieldLabel,
 } from "@workspace/ui/components/field";
 import { Input } from "@workspace/ui/components/input";
+import { Spinner } from "@workspace/ui/components/spinner";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const formSchema = z.object({
@@ -32,6 +37,8 @@ const formSchema = z.object({
 });
 
 export function AddComplaint() {
+  const trpc = useTRPC();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,11 +47,25 @@ export function AddComplaint() {
     },
   });
 
+  const mutation = useMutation(
+    trpc.complaints.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("Complaint Added Successfully");
+        form.reset();
+        setIsOpen(false);
+      },
+      onError: (ctx) => {
+        toast.error(ctx.message ?? "Failed to submit complaint");
+      },
+    }),
+  );
+
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.table(values);
+    mutation.mutate({ ...values });
   }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen || mutation.isPending} onOpenChange={setIsOpen}>
       <form onSubmit={form.handleSubmit(onSubmit)} id="complaint-form">
         <DialogTrigger asChild>
           <Button className="font-normal">Add Complaint</Button>
@@ -98,13 +119,22 @@ export function AddComplaint() {
             />
           </FieldGroup>
           <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline" onClick={() => form.reset()}>
+            <DialogClose asChild disabled={mutation.isPending}>
+              <Button
+                variant="outline"
+                onClick={() => form.reset()}
+                disabled={mutation.isPending}
+              >
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit" form="complaint-form">
-              Submit
+            <Button
+              type="submit"
+              form="complaint-form"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending && <Spinner />}
+              {mutation.isPending ? "Submitting..." : "Submit"}
             </Button>
           </DialogFooter>
         </DialogContent>
