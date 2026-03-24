@@ -2,7 +2,11 @@
 
 import { useTRPC } from "@/dal/client";
 import { Trash } from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { Complaint } from "@workspace/db";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -31,6 +35,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { MdMoreHoriz } from "react-icons/md";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 export const statusParser = parseAsStringEnum(["PENDING", "RESOLVED"]);
 export const cursorParser = parseAsString;
@@ -107,6 +112,24 @@ export function MyComplaints() {
 }
 
 export function ComplaintCard({ complaint }: { complaint: Complaint }) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  const mutation = useMutation(
+    trpc.complaints.delete.mutationOptions({
+      onSuccess: () => {
+        toast.success("Complaint Deleted Successfully");
+        queryClient.invalidateQueries({
+          queryKey: trpc.complaints.getAll.queryKey(),
+        });
+      },
+      onError: (error) => {
+        toast.error(error.message ?? "Failed to delete complaint");
+      },
+    }),
+  );
+
+  const handleDelete = (complaintId: string) =>
+    mutation.mutate({ complaintId });
   return (
     <Card className="h-full">
       <CardHeader>
@@ -129,7 +152,10 @@ export function ComplaintCard({ complaint }: { complaint: Complaint }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleDelete(complaint.id)}
+                  disabled={mutation.isPending}
+                >
                   <Trash />
                   Delete Complaint
                 </DropdownMenuItem>

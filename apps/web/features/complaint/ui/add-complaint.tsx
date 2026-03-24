@@ -2,7 +2,7 @@
 
 import { useTRPC } from "@/dal/client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -38,6 +38,7 @@ const formSchema = z.object({
 
 export function AddComplaint() {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -50,6 +51,9 @@ export function AddComplaint() {
   const mutation = useMutation(
     trpc.complaints.create.mutationOptions({
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.complaints.getAll.queryKey(),
+        });
         toast.success("Complaint Added Successfully");
         form.reset();
         setIsOpen(false);

@@ -55,4 +55,19 @@ export const complaintRouter = createTRPCRouter({
       }
       return { items, nextCursor };
     }),
+  delete: protectedProcedure
+    .input(
+      z.object({
+        complaintId: z.string().uuid({ message: "complaint id is not valid" }),
+      }),
+    )
+    .mutation(async (opts) => {
+      const result = await prisma.complaint.delete({
+        where: {
+          id: opts.input.complaintId,
+          userId: opts.ctx.user.id,
+        },
+      });
+      return result;
+    }),
 });
