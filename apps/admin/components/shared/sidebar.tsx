@@ -71,10 +71,10 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   className={
-                    isActive("/complaints") ? "bg-background border" : ""
+                    isActive("/complaint") ? "bg-background border" : ""
                   }
                 >
-                  <Link href="/complaints">
+                  <Link href="/complaint">
                     <MdWarning />
                     <span className="group-data-[collapsible=icon]:hidden">
                       My Complaints
