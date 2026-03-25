@@ -23,7 +23,6 @@ model User {
   sessions           Session[]
   accounts           Account[]
   complaints         Complaint[]
-  archivedComplaints ComplaintArchive[]
   resolvedComplaints ComplaintComment[]
 
   role       String?
@@ -92,27 +91,15 @@ model Complaint {
   title              String
   description        String
   status             ComplaintStatus   @default(PENDING)
-  isArchived         Boolean           @default(false)
   deletedForAdmin    Boolean           @default(false)
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   resolvedAt         DateTime
-  archiveComplaints  ComplaintArchive?
   resolvedComplaints ComplaintComment?
 
   @@index([userId, status])
-  @@index([deletedForAdmin, isArchived])
+  @@index([deletedForAdmin])
   @@map("complaint")
-}
-
-model ComplaintArchive {
-  id          String    @id @default(uuid())
-  complaintId String    @unique
-  complaint   Complaint @relation(fields: [complaintId], references: [id], onDelete: Cascade)
-  adminId     String
-  archivedBy  User      @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 }
 
 model ComplaintComment {
