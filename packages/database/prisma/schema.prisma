@@ -94,7 +94,7 @@ model Complaint {
   deletedForAdmin    Boolean           @default(false)
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
-  resolvedAt         DateTime
+  resolvedAt         DateTime?
   resolvedComplaints ComplaintComment?
 
   @@index([userId, status])

@@ -51,4 +51,37 @@ export const complaintRouter = createTRPCRouter({
       });
       return result;
     }),
+  resolve: protectedProcedure
+    .input(
+      z.object({
+        complaintId: z.string().uuid({ message: "complaint id is not valid" }),
+        comment: z
+          .string()
+          .min(5, "Comment is too short")
+          .max(200, "Comment is too long"),
+      }),
+    )
+    .mutation(async (opts) => {
+      const { complaintId, comment } = opts.input;
+      const adminId = opts.ctx.user.id;
+
+      const result = await prisma.$transaction([
+        prisma.complaint.update({
+          where: { id: complaintId },
+          data: {
+            status: "RESOLVED",
+            resolvedAt: new Date(),
+          },
+        }),
+        prisma.complaintComment.create({
+          data: {
+            complaintId,
+            adminId,
+            comment,
+          },
+        }),
+      ]);
+
+      return result[0];
+    }),
 });

@@ -1,7 +1,27 @@
 "use client";
 
 import { useTRPC } from "@/dal/client";
-import { Trash } from "@phosphor-icons/react";
+import { Trash, CheckCircle } from "@phosphor-icons/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@workspace/ui/components/field";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { Spinner } from "@workspace/ui/components/spinner";
 import {
   useMutation,
   useQueryClient,
@@ -34,7 +54,7 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import { MdMoreHoriz } from "react-icons/md";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useTheme } from "next-themes";
 
@@ -139,58 +159,171 @@ export function AdminComplaintCard({
     }),
   );
 
+  const resolveMutation = useMutation(
+    trpc.complaint.resolve.mutationOptions({
+      onSuccess: () => {
+        toast.success("Complaint Resolved Successfully");
+        queryClient.invalidateQueries({
+          queryKey: trpc.complaint.getAll.queryKey(),
+        });
+        setIsResolveOpen(false);
+        form.reset();
+      },
+      onError: (error) => {
+        toast.error(error.message ?? "Failed to resolve complaint");
+      },
+    }),
+  );
+
+  const [isResolveOpen, setIsResolveOpen] = useState(false);
+
+  const formSchema = z.object({
+    comment: z
+      .string()
+      .min(5, "Comment is too short")
+      .max(200, "Comment is too long"),
+  });
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      comment: "",
+    },
+  });
+
   const handleDelete = (complaintId: string) =>
     mutation.mutate({ complaintId });
+
+  function onResolveSubmit(values: z.infer<typeof formSchema>) {
+    resolveMutation.mutate({
+      complaintId: complaint.id,
+      comment: values.comment,
+    });
+  }
+
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <div className="mb-1 w-full flex justify-between">
-          <div
-            className={cn(
-              "w-fit h-fit p-1 text-xs",
-              complaint.status === "PENDING"
-                ? theme === "dark"
-                  ? "text-red-500 bg-red-950"
-                  : "text-red-500 bg-red-50"
-                : theme === "dark"
-                  ? "text-green-500 bg-green-950"
-                  : "text-green-500 bg-green-50",
-            )}
+    <>
+      <Dialog
+        open={isResolveOpen || resolveMutation.isPending}
+        onOpenChange={setIsResolveOpen}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <form
+            onSubmit={form.handleSubmit(onResolveSubmit)}
+            id={`resolve-form-${complaint.id}`}
           >
-            <p>{complaint.status}</p>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <MdMoreHoriz />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40">
-              <DropdownMenuGroup>
-                <DropdownMenuItem
-                  onClick={() => handleDelete(complaint.id)}
-                  disabled={mutation.isPending}
+            <DialogHeader>
+              <DialogTitle>Resolve Complaint</DialogTitle>
+              <DialogDescription>
+                Provide a comment explaining how this complaint was resolved.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <FieldGroup>
+                <Controller
+                  name="comment"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor={`comment-${complaint.id}`}>
+                        Resolution Comment
+                      </FieldLabel>
+                      <Textarea
+                        {...field}
+                        id={`comment-${complaint.id}`}
+                        placeholder="Enter your comment here"
+                        aria-invalid={fieldState.invalid}
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
+                />
+              </FieldGroup>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild disabled={resolveMutation.isPending}>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => form.reset()}
                 >
-                  <Trash />
-                  Delete Complaint
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        <CardTitle>{complaint.title}</CardTitle>
-        <CardDescription>{complaint.description}</CardDescription>
-        <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground border-t pt-2">
-          <p>
-            <span className="font-medium text-foreground">Submitted By:</span>{" "}
-            {complaint.user.name}
-          </p>
-          <p>
-            <span className="font-medium text-foreground">Submitted At:</span>{" "}
-            {new Date(complaint.createdAt).toLocaleString()}
-          </p>
-        </div>
-      </CardHeader>
-    </Card>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                type="submit"
+                form={`resolve-form-${complaint.id}`}
+                disabled={resolveMutation.isPending}
+              >
+                {resolveMutation.isPending && <Spinner />}
+                {resolveMutation.isPending ? "Resolving..." : "Resolve"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+      <Card className="h-full">
+        <CardHeader>
+          <div className="mb-1 w-full flex justify-between">
+            <div
+              className={cn(
+                "w-fit h-fit p-1 text-xs",
+                complaint.status === "PENDING"
+                  ? theme === "dark"
+                    ? "text-red-500 bg-red-950"
+                    : "text-red-500 bg-red-50"
+                  : theme === "dark"
+                    ? "text-green-500 bg-green-950"
+                    : "text-green-500 bg-green-50",
+              )}
+            >
+              <p>{complaint.status}</p>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <MdMoreHoriz />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuGroup>
+                  {complaint.status === "PENDING" && (
+                    <DropdownMenuItem
+                      onClick={() => setIsResolveOpen(true)}
+                      disabled={mutation.isPending || resolveMutation.isPending}
+                    >
+                      <CheckCircle />
+                      Resolve It
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem
+                    className="text-red-500 focus:text-red-500"
+                    onClick={() => handleDelete(complaint.id)}
+                    disabled={mutation.isPending || resolveMutation.isPending}
+                  >
+                    <Trash />
+                    Delete Complaint
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <CardTitle>{complaint.title}</CardTitle>
+          <CardDescription>{complaint.description}</CardDescription>
+          <div className="mt-2 flex flex-col gap-1 text-xs text-muted-foreground border-t pt-2">
+            <p>
+              <span className="font-medium text-foreground">Submitted By:</span>{" "}
+              {complaint.user.name}
+            </p>
+            <p>
+              <span className="font-medium text-foreground">Submitted At:</span>{" "}
+              {new Date(complaint.createdAt).toLocaleString()}
+            </p>
+          </div>
+        </CardHeader>
+      </Card>
+    </>
   );
 }
