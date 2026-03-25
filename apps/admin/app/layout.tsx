@@ -1,5 +1,5 @@
 import { Geist, JetBrains_Mono } from "next/font/google";
-
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
@@ -34,7 +34,9 @@ export default function RootLayout({
     >
       <TRPCReactProvider>
         <body>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <NuqsAdapter>{children}</NuqsAdapter>
+          </ThemeProvider>
           <Toaster />
         </body>
       </TRPCReactProvider>
