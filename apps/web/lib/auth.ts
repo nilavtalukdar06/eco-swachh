@@ -4,6 +4,15 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
+  user: {
+    additionalFields: {
+      points: {
+        type: "number",
+        required: true,
+        defaultValue: 0,
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
