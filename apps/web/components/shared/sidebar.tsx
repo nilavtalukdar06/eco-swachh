@@ -17,8 +17,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MdDashboard, MdWarning } from "react-icons/md";
-import { BsOpenai } from "react-icons/bs";
-import { RiChatAiFill } from "react-icons/ri";
 import { FaHackerNews } from "react-icons/fa";
 import { LuRecycle } from "react-icons/lu";
 
@@ -81,39 +79,6 @@ export function AppSidebar() {
                     <LuRecycle />
                     <span className="group-data-[collapsible=icon]:hidden">
                       My Reports
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Communication</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={isActive("/ai-chat") ? "bg-background border" : ""}
-                >
-                  <Link href="/ai-chat">
-                    <BsOpenai />
-                    <span className="group-data-[collapsible=icon]:hidden">
-                      Chat With AI
-                    </span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  className={isActive("/chat") ? "bg-background border" : ""}
-                >
-                  <Link href="/chat">
-                    <RiChatAiFill />
-                    <span className="group-data-[collapsible=icon]:hidden">
-                      Chat With People
                     </span>
                   </Link>
                 </SidebarMenuButton>
