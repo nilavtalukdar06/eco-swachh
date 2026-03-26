@@ -1,0 +1,2 @@
+export const summaryPrompt =
+  "Fetch recent (last 30 days) high-impact urban waste management updates from authoritative sources, focusing on Indian cities. Extract structured records with title, source, date, location, type, and concise summaries, prioritizing real-world outcomes, operational insights, policies, enforcement, and technology deployments while excluding generic or promotional content.";

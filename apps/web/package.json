@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.48",
     "@hookform/resolvers": "^5.2.2",
     "@mendable/firecrawl-js": "^4.18.0",
     "@phosphor-icons/react": "^2.1.10",
@@ -22,6 +23,7 @@
     "@upstash/redis": "^1.37.0",
     "@workspace/db": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "ai": "^6.0.138",
     "axios": "^1.13.6",
     "better-auth": "^1.5.5",
     "client-only": "^0.0.1",

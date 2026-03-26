@@ -20,7 +20,7 @@ export const newsRouter = createTRPCRouter({
       limit: 10,
       scrapeOptions: {
         onlyMainContent: false,
-        maxAge: 172800000,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
         parsers: ["pdf"],
         formats: ["summary", "links"],
       },
@@ -32,7 +32,7 @@ export const newsRouter = createTRPCRouter({
       });
     }
     const newsData = data.data;
-    await redis.set(CACHE_KEY, newsData, {
+    await redis.set(CACHE_KEY, JSON.stringify(newsData), {
       ex: TTL_SECONDS,
     });
     return newsData;
