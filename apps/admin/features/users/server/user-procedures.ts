@@ -27,7 +27,7 @@ export const userRouter = createTRPCRouter({
   banUser: protectedProcedure
     .input(
       z.object({
-        userId: z.string().uuid({ message: "the user id is not valid" }),
+        userId: z.string().min(1, { message: "user id is required" }),
         banReason: z
           .string()
           .min(5, { message: "ban reason is too short" })
@@ -53,7 +53,7 @@ export const userRouter = createTRPCRouter({
   unbanUser: protectedProcedure
     .input(
       z.object({
-        userId: z.string().uuid({ message: "the user id is not valid" }),
+        userId: z.string().min(1, { message: "user id is not required" }),
       }),
     )
     .mutation(async (opts) => {
