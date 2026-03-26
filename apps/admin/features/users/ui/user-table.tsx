@@ -2,13 +2,16 @@
 
 import { useTRPC } from "@/dal/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { UserDataTable } from "./user-data-table";
+import { columns } from "./user-table-columns";
 
 export function UserTable() {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.user.getAll.queryOptions());
+
   return (
     <div className="my-4">
-      <p>User Table</p>
+      <UserDataTable columns={columns as any} data={data} />
     </div>
   );
 }
