@@ -10,7 +10,7 @@ export function UserTable() {
   const { data } = useSuspenseQuery(trpc.user.getAll.queryOptions());
 
   return (
-    <div className="my-4">
+    <div className="my-2">
       <UserDataTable columns={columns as any} data={data} />
     </div>
   );
