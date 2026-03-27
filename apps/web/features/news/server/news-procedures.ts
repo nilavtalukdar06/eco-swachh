@@ -7,17 +7,23 @@ import { redis } from "@/lib/redis";
 const CACHE_KEY = "news:daily";
 const TTL_SECONDS = 60 * 60 * 24;
 
+type NewsResponse = {
+  web: any[];
+};
+
 export const newsRouter = createTRPCRouter({
-  fetchNews: protectedProcedure.query(async () => {
+  fetchNews: protectedProcedure.query(async (): Promise<NewsResponse> => {
     const cached = await redis.get(CACHE_KEY);
     if (cached) {
-      return cached;
+      return (
+        typeof cached === "string" ? JSON.parse(cached) : cached
+      ) as NewsResponse;
     }
     const { data } = await firecrawlClient.post("/", {
       query: scrapperPrompt,
       sources: ["web"],
       categories: [],
-      limit: 10,
+      limit: 8,
       scrapeOptions: {
         onlyMainContent: false,
         maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -32,7 +38,7 @@ export const newsRouter = createTRPCRouter({
       });
     }
     const newsData = data.data;
-    await redis.set(CACHE_KEY, JSON.stringify(newsData), {
+    await redis.set(CACHE_KEY, newsData, {
       ex: TTL_SECONDS,
     });
     return newsData;
