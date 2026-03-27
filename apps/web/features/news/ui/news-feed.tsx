@@ -38,7 +38,9 @@ export function NewsFeed() {
             </CardHeader>
             <CardFooter className="gap-3 max-sm:flex-col max-sm:items-stretch">
               <Button>
-                <a href={item.url}>Open Article</a>
+                <a href={item.url} target="_blank">
+                  Open Article
+                </a>
               </Button>
             </CardFooter>
           </Card>
