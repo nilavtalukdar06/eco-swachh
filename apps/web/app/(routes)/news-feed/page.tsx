@@ -1,5 +1,6 @@
 import { getQueryClient, trpc } from "@/dal/server";
 import { Summary } from "@/features/news/ui/summary";
+import { CarbonHeatmap } from "@/features/carbon/ui/carbon-heatmap";
 import { auth } from "@/lib/auth";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { headers } from "next/headers";
@@ -7,6 +8,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { SummaryError, SummaryLoading } from "./_components/summary";
 import { Suspense } from "react";
 import { NewsError, NewsLoading } from "./_components/news";
+import { HeatmapError, HeatmapLoading } from "./_components/heatmap";
 import { NewsFeed } from "@/features/news/ui/news-feed";
 
 export default async function NewsFeedPage() {
@@ -19,6 +21,11 @@ export default async function NewsFeedPage() {
   }
   if (result?.session) {
     void queryClient.prefetchQuery(trpc.news.fetchNews.queryOptions());
+  }
+  if (result?.session) {
+    void queryClient.prefetchQuery(
+      trpc.carbon.getCarbonIntensity.queryOptions(),
+    );
   }
   return (
     <div className="w-full p-4">
@@ -38,6 +45,13 @@ export default async function NewsFeedPage() {
         <ErrorBoundary fallback={<NewsError />}>
           <Suspense fallback={<NewsLoading />}>
             <NewsFeed />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrationBoundary>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary fallback={<HeatmapError />}>
+          <Suspense fallback={<HeatmapLoading />}>
+            <CarbonHeatmap />
           </Suspense>
         </ErrorBoundary>
       </HydrationBoundary>
