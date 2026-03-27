@@ -8,7 +8,7 @@ export function Summary() {
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(trpc.ai.generateSummary.queryOptions());
   return (
-    <div className="my-2 p-2 bg-yellow-50 border border-yellow-200">
+    <div className="my-2 p-2 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800">
       <div className="text-yellow-600 font-light text-xs leading-snug tracking-wide">
         <ReactMarkdown>{data?.result}</ReactMarkdown>
       </div>
