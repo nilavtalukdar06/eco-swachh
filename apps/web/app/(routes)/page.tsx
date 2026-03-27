@@ -1,7 +1,25 @@
 import { DashboardStats } from "@/features/dashboard/ui/dashboard-stats";
 import { LeaderboardTable } from "@/features/leaderboard/ui/leaderboard-table";
+import { getQueryClient, trpc } from "@/dal/server";
+import { auth } from "@/lib/auth";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { headers } from "next/headers";
+import { ErrorBoundary } from "react-error-boundary";
+import { Suspense } from "react";
+import {
+  LeaderboardError,
+  LeaderboardLoading,
+} from "./_components/leaderboard";
 
-export default function Home() {
+export default async function Home() {
+  const queryClient = getQueryClient();
+  const result = await auth.api.getSession({
+    headers: await headers(),
+  });
+  if (result?.session) {
+    void queryClient.prefetchQuery(trpc.leaderboard.getTopUsers.queryOptions());
+  }
+
   return (
     <div className="w-full p-4">
       <p className="text-lg">Dashboard</p>
@@ -11,7 +29,13 @@ export default function Home() {
         time across communities.
       </p>
       <DashboardStats />
-      <LeaderboardTable />
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary fallback={<LeaderboardError />}>
+          <Suspense fallback={<LeaderboardLoading />}>
+            <LeaderboardTable />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrationBoundary>
     </div>
   );
 }
