@@ -4,6 +4,7 @@ import { newsRouter } from "@/features/news/server/news-procedures";
 import { aiRouter } from "@/features/news/server/ai-procedures";
 import { carbonRouter } from "@/features/carbon/server/carbon-procedures";
 import { stockRouter } from "@/features/stocks/server/stock-procedures";
+import { leaderboardRouter } from "@/features/leaderboard/server/leaderboard-procedures";
 
 export const appRouter = createTRPCRouter({
   complaints: complaintRouter,
@@ -11,6 +12,7 @@ export const appRouter = createTRPCRouter({
   ai: aiRouter,
   carbon: carbonRouter,
   stocks: stockRouter,
+  leaderboard: leaderboardRouter,
 });
 
 export type AppRouter = typeof appRouter;
