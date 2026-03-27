@@ -1,6 +1,7 @@
 import { getQueryClient, trpc } from "@/dal/server";
 import { Summary } from "@/features/news/ui/summary";
 import { CarbonHeatmap } from "@/features/carbon/ui/carbon-heatmap";
+import { StockTable } from "@/features/stocks/ui/stock-table";
 import { auth } from "@/lib/auth";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { headers } from "next/headers";
@@ -9,6 +10,7 @@ import { SummaryError, SummaryLoading } from "./_components/summary";
 import { Suspense } from "react";
 import { NewsError, NewsLoading } from "./_components/news";
 import { HeatmapError, HeatmapLoading } from "./_components/heatmap";
+import { StocksError, StocksLoading } from "./_components/stocks";
 import { NewsFeed } from "@/features/news/ui/news-feed";
 
 export default async function NewsFeedPage() {
@@ -26,6 +28,9 @@ export default async function NewsFeedPage() {
     void queryClient.prefetchQuery(
       trpc.carbon.getCarbonIntensity.queryOptions(),
     );
+  }
+  if (result?.session) {
+    void queryClient.prefetchQuery(trpc.stocks.getStockQuotes.queryOptions());
   }
   return (
     <div className="w-full p-4">
@@ -52,6 +57,13 @@ export default async function NewsFeedPage() {
         <ErrorBoundary fallback={<HeatmapError />}>
           <Suspense fallback={<HeatmapLoading />}>
             <CarbonHeatmap />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrationBoundary>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary fallback={<StocksError />}>
+          <Suspense fallback={<StocksLoading />}>
+            <StockTable />
           </Suspense>
         </ErrorBoundary>
       </HydrationBoundary>
