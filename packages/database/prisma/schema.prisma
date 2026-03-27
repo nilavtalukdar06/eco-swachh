@@ -12,6 +12,18 @@ enum ComplaintStatus {
   RESOLVED
 }
 
+enum  ReportPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ReportStatus {
+  PROCESSING
+  SPAM
+  PENDING
+}
+
 model User {
   id                 String             @id
   name               String
@@ -25,6 +37,8 @@ model User {
   accounts           Account[]
   complaints         Complaint[]
   resolvedComplaints ComplaintComment[]
+  reports            Report[]
+  spamReports        SpamReport[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -112,4 +126,38 @@ model ComplaintComment {
   comment     String
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model Report {
+  id                   String      @id @default(uuid())
+  imageUrl             String
+  userDescription      String
+  aiTitle              String
+  aiDescription        String
+  wasteType            String
+  wasteDetails         String
+  estimatedWeight      Float
+  disposalInstructions String
+  warnings             String
+  priority             ReportPriority
+  status               ReportStatus
+  latitude             Float?
+  longitude            Float?
+  manualLocation       String?
+  userId               String
+  user                 User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  spamReports          SpamReport?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+}
+
+model SpamReport {
+  id         String   @id @default(uuid())
+  spamReason String
+  reportId   String   @unique
+  report     Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
