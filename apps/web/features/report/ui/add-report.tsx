@@ -220,11 +220,11 @@ export function AddReport() {
               AI will analyze it and generate a detailed report.
             </DialogDescription>
           </DialogHeader>
-          <FieldGroup>
+          <FieldGroup className="mt-4">
             <Field>
               <FieldLabel>Waste Image</FieldLabel>
               {imageUrl ? (
-                <div className="relative w-full h-48 rounded-md overflow-hidden border">
+                <div className="relative w-full h-48 rounded-none overflow-hidden border">
                   <Image
                     src={imageUrl}
                     alt="Uploaded waste"
@@ -248,7 +248,7 @@ export function AddReport() {
                 </div>
               ) : (
                 <div
-                  className="relative w-full border-2 border-dashed rounded-md p-6 transition-colors hover:border-primary/50 cursor-pointer"
+                  className="relative w-full border-2 border-dashed p-6 transition-colors hover:border-primary/50 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <input
@@ -317,13 +317,13 @@ export function AddReport() {
             <Field>
               <FieldLabel>Location</FieldLabel>
               {locationStatus === "requesting" && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground p-2 border rounded-md">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground p-2 border">
                   <Spinner />
                   <span>Requesting location access...</span>
                 </div>
               )}
               {locationStatus === "granted" && latitude && longitude && (
-                <div className="flex items-center gap-2 text-sm p-2 border rounded-md bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400">
+                <div className="flex items-center gap-2 text-sm p-2 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400">
                   <Check weight="bold" />
                   <MapPin weight="fill" />
                   <span>
@@ -352,7 +352,7 @@ export function AddReport() {
               )}
             </Field>
           </FieldGroup>
-          <DialogFooter>
+          <DialogFooter className="mt-4">
             <DialogClose asChild disabled={mutation.isPending || isUploading}>
               <Button
                 type="button"
