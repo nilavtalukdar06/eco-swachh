@@ -1,6 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from "@/dal/init";
 import { prisma } from "@workspace/db";
 import * as z from "zod";
+import { TRPCError } from "@trpc/server";
 
 const PAGE_SIZE = 12;
 
