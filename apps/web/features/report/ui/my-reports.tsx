@@ -12,12 +12,24 @@ import {
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Skeleton } from "@workspace/ui/components/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
-import { parseAsString, useQueryState } from "nuqs";
+import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
 import Link from "next/link";
 import Image from "next/image";
+import { useCallback } from "react";
 
 export const cursorParser = parseAsString;
+export const statusParser = parseAsStringEnum(["PROCESSING", "SPAM", "PENDING"]);
+export const priorityParser = parseAsStringEnum(["LOW", "MEDIUM", "HIGH"]);
 
 const PRIORITY_STYLES: Record<string, string> = {
   LOW: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
@@ -37,10 +49,14 @@ const STATUS_STYLES: Record<string, string> = {
 export function MyReports() {
   const trpc = useTRPC();
   const [cursor, setCursor] = useQueryState("cursor", cursorParser);
+  const [status, setStatus] = useQueryState("status", statusParser);
+  const [priority, setPriority] = useQueryState("priority", priorityParser);
 
   const { data } = useSuspenseQuery({
     ...trpc.reports.getAll.queryOptions({
       cursor: cursor ?? undefined,
+      status: status ?? undefined,
+      priority: priority ?? undefined,
     }),
     refetchInterval: (query) => {
       const reports = query.state.data?.items;
@@ -51,8 +67,55 @@ export function MyReports() {
     },
   });
 
+  const handleStatus = useCallback(
+    (value: string) => {
+      setCursor(null);
+      setStatus(value === "all" ? null : (value as "PROCESSING" | "SPAM" | "PENDING"));
+    },
+    [setCursor, setStatus],
+  );
+
+  const handlePriority = useCallback(
+    (value: string) => {
+      setCursor(null);
+      setPriority(value === "all" ? null : (value as "LOW" | "MEDIUM" | "HIGH"));
+    },
+    [setCursor, setPriority],
+  );
+
   return (
     <div className="my-3">
+      <div className="mb-4 w-full flex flex-wrap gap-4">
+        <Select value={status ?? "all"} onValueChange={handleStatus}>
+          <SelectTrigger className="w-full max-w-48">
+            <SelectValue placeholder="Filter by status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Status</SelectLabel>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="PROCESSING">Processing</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="SPAM">Spam</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+
+        <Select value={priority ?? "all"} onValueChange={handlePriority}>
+          <SelectTrigger className="w-full max-w-48">
+            <SelectValue placeholder="Filter by priority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>Priority</SelectLabel>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="LOW">Low</SelectItem>
+              <SelectItem value="MEDIUM">Medium</SelectItem>
+              <SelectItem value="HIGH">High</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
       {data.items.length === 0 ? (
         <p className="font-light text-muted-foreground text-sm">
           No reports found. Submit your first waste report above.

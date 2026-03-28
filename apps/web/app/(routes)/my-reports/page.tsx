@@ -1,6 +1,11 @@
 import { getQueryClient, trpc } from "@/dal/server";
 import { AddReport } from "@/features/report/ui/add-report";
-import { MyReports, cursorParser } from "@/features/report/ui/my-reports";
+import {
+  MyReports,
+  cursorParser,
+  statusParser,
+  priorityParser,
+} from "@/features/report/ui/my-reports";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ErrorBoundary } from "react-error-boundary";
@@ -11,6 +16,8 @@ import { createSearchParamsCache } from "nuqs/server";
 
 const searchParamsCache = createSearchParamsCache({
   cursor: cursorParser,
+  status: statusParser,
+  priority: priorityParser,
 });
 
 export default async function MyReportsPage({
@@ -22,10 +29,12 @@ export default async function MyReportsPage({
   const queryClient = getQueryClient();
 
   if (result?.session) {
-    const { cursor } = searchParamsCache.parse(searchParams);
+    const { cursor, status, priority } = searchParamsCache.parse(searchParams);
     void queryClient.prefetchQuery(
       trpc.reports.getAll.queryOptions({
         cursor: cursor ?? undefined,
+        status: status ?? undefined,
+        priority: priority ?? undefined,
       }),
     );
   }

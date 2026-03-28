@@ -65,18 +65,23 @@ export const reportRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(
       z.object({
+        status: z.enum(["PROCESSING", "SPAM", "PENDING"]).optional(),
+        priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
         cursor: z.string().optional(),
       }),
     )
     .query(async (opts) => {
+      const { status, priority, cursor } = opts.input;
       const items = await prisma.report.findMany({
         where: {
           userId: opts.ctx.user.id,
+          ...(status ? { status } : {}),
+          ...(priority ? { priority } : {}),
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE + 1,
-        ...(opts.input.cursor
-          ? { cursor: { id: opts.input.cursor }, skip: 1 }
+        ...(cursor
+          ? { cursor: { id: cursor }, skip: 1 }
           : {}),
       });
 
