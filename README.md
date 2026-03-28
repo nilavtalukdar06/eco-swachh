@@ -216,16 +216,13 @@ The application uses **PostgreSQL** managed through **Prisma ORM** with 8 models
 
 ```mermaid
 erDiagram
-    User ||--o{ Session : has
-    User ||--o{ Account : has
-    User ||--o{ Complaint : submits
-    User ||--o{ ComplaintComment : "resolves as admin"
-    User ||--o{ Report : submits
-    User ||--o{ SpamReport : "flagged for"
-    User ||--o{ ResolvedReport : "resolved by admin"
-    Complaint ||--o| ComplaintComment : "has resolution"
-    Report ||--o| SpamReport : "has spam record"
-    Report ||--o| ResolvedReport : "has resolution"
+    User ||--o{ ComplaintComment : "has comments"
+    User ||--o{ Report : "has reports"
+    User ||--o{ SpamReport : "reports spam"
+    User ||--o{ ResolvedReport : "resolves reports"
+    Complaint ||--o{ ComplaintComment : "has comments"
+    Report ||--o{ SpamReport : "has spam record"
+    Report ||--o{ ResolvedReport : "has resolution"
 
     User {
         String id PK
@@ -275,7 +272,7 @@ erDiagram
         String userId FK
         String title
         String description
-        ComplaintStatus status
+        String status
         Boolean deletedForAdmin
         DateTime resolvedAt
         DateTime createdAt
@@ -283,7 +280,7 @@ erDiagram
 
     ComplaintComment {
         String id PK
-        String complaintId FK_UK
+        String complaintId FK
         String adminId FK
         String comment
         DateTime createdAt
@@ -300,8 +297,8 @@ erDiagram
         Float estimatedWeight
         String disposalInstructions
         String warnings
-        ReportPriority priority
-        ReportStatus status
+        String priority
+        String status
         Float latitude
         Float longitude
         String manualLocation
@@ -311,14 +308,14 @@ erDiagram
     SpamReport {
         String id PK
         String spamReason
-        String reportId FK_UK
+        String reportId FK
         String userId FK
     }
 
     ResolvedReport {
         String id PK
         String comment
-        String reportId FK_UK
+        String reportId FK
         String userId FK
     }
 ```
