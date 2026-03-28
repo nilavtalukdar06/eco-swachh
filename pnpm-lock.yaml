@@ -32,6 +32,9 @@ importers:
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.72.0(react@19.2.4))
+      '@mapbox/mapbox-gl-directions':
+        specifier: ^4.3.1
+        version: 4.3.1(mapbox-gl@3.20.0)
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -50,6 +53,9 @@ importers:
       '@trpc/tanstack-react-query':
         specifier: ^11.14.1
         version: 11.14.1(@tanstack/react-query@5.94.5(react@19.2.4))(@trpc/client@11.14.1(@trpc/server@11.14.1(typescript@5.9.3))(typescript@5.9.3))(@trpc/server@11.14.1(typescript@5.9.3))(react@19.2.4)(typescript@5.9.3)
+      '@types/mapbox-gl':
+        specifier: ^3.5.0
+        version: 3.5.0
       '@workspace/db':
         specifier: workspace:*
         version: link:../../packages/database
@@ -62,6 +68,12 @@ importers:
       client-only:
         specifier: ^0.0.1
         version: 0.0.1
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
+      mapbox-gl:
+        specifier: ^3.20.0
+        version: 3.20.0
       next:
         specifier: 16.1.6
         version: 16.1.6(@opentelemetry/api@1.9.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
