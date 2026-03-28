@@ -13,7 +13,7 @@ Welcome to the complete documentation for the **EcoSwachh** waste management pla
 | [📁 Project Structure](./project-structure.md) | Monorepo layout, app structure, package details, and how to create new packages/features |
 | [📊 Database Design](./database-design.md) | ER diagrams, class diagrams, sequence diagrams, indexes, and points system |
 | [🛠️ API Reference](./api-reference.md) | Complete tRPC procedure documentation for web and admin apps |
-| [✨ Features](./features.md) | Detailed feature documentation for all 11 modules |
+| [✨ Features](./features.md) | Detailed feature documentation for all 12 modules (including Web3 wallet) |
 | [🚀 Setup Guide](./setup.md) | Installation, environment variables, deployment, and troubleshooting |
 
 ---
@@ -30,6 +30,8 @@ Welcome to the complete documentation for the **EcoSwachh** waste management pla
 - [Architecture overview](./architecture.md#high-level-system-architecture)
 - [Feature-sliced design pattern](./architecture.md#1-feature-sliced-design)
 - [Authentication flow](./architecture.md#4-authentication-flow)
+- [Web3 wallet flow](./architecture.md#web3-wallet-connection-flow)
+- [EcoToken minting pipeline](./architecture.md#ecotoken-minting-pipeline)
 
 ### For Deployment
 - [Environment variables](./setup.md#step-2-environment-variables)

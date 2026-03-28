@@ -30,6 +30,7 @@ erDiagram
         Boolean banned
         String banReason
         DateTime banExpires
+        String walletAddress "optional Ethereum 0x address"
         DateTime createdAt
         DateTime updatedAt
     }
@@ -151,6 +152,7 @@ classDiagram
         +Boolean? banned
         +String? banReason
         +DateTime? banExpires
+        +String? walletAddress
         +DateTime createdAt
         +DateTime updatedAt
         +Session[] sessions

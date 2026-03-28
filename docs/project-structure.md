@@ -114,20 +114,26 @@ apps/web/
 │   │   ├── prompts/        # spam-check.ts, analyze-waste.ts
 │   │   ├── server/         # reportRouter: submit, getAll, getById, delete
 │   │   └── ui/             # AddReport, MyReports, ReportDetail, LocationMap
-│   └── stocks/
-│       ├── server/         # stockRouter: getStockQuotes
-│       └── ui/             # StockTable, StockDataTable, StockTableColumns
+│   ├── stocks/
+│   │   ├── server/         # stockRouter: getStockQuotes
+│   │   └── ui/             # StockTable, StockDataTable, StockTableColumns
+│   └── wallet/
+│       ├── server/         # walletRouter: saveWalletAddress, getWalletAddress
+│       └── ui/             # ConnectWalletButton
 │
 ├── hooks/                  # Global hooks (shared across features)
 ├── jobs/                   # Background job definitions
 │   ├── client.ts           # Inngest client (id: "eco-swachh-web")
-│   └── process-report.ts   # 3-step AI pipeline
+│   ├── process-report.ts   # 3-step AI pipeline
+│   └── mint-tokens.ts      # ERC-20 EcoToken minting pipeline
 ├── lib/                    # Utility modules
 │   ├── auth.ts             # Better Auth: server config (Prisma adapter)
 │   ├── auth-client.ts      # Better Auth: client instance
 │   ├── firecrawl.ts        # Firecrawl API client
-│   └── redis.ts            # Upstash Redis client
-└── public/                 # Static assets (logo.svg, icon.svg)
+│   ├── redis.ts            # Upstash Redis client
+│   ├── wagmi.ts            # wagmi config (Sepolia, MetaMask, injected)
+│   └── wagmi-provider.tsx  # WagmiClientProvider context wrapper
+└── public/                 # Static assets (logo.svg, icon.svg, metamask.svg)
 ```
 
 ### `apps/admin` — Admin Management Portal

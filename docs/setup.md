@@ -25,6 +25,8 @@ Complete setup instructions for development and production environments.
 | [Electricity Maps](https://electricitymap.org/) | Carbon intensity data | ✅ Free tier (limited) |
 | [Finnhub](https://finnhub.io/) | Stock market data | ✅ Free tier (60 calls/min) |
 | [Inngest](https://inngest.com/) | Background job processing | ✅ Free tier (local dev free) |
+| [Infura](https://infura.io/) / [Alchemy](https://alchemy.com/) | Ethereum Sepolia RPC provider | ✅ Free tier |
+| [MetaMask](https://metamask.io/) | Ethereum wallet (browser extension) | ✅ Free |
 
 ---
 
@@ -84,6 +86,12 @@ FINNHUB_API_KEY="your-finnhub-api-key"
 # ─── Inngest ────────────────────────────────────────────────────
 INNGEST_EVENT_KEY="your-inngest-event-key"
 INNGEST_SIGNING_KEY="your-inngest-signing-key"
+
+# ─── Web3 / Blockchain ───────────────────────────────────────────
+NEXT_PUBLIC_SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/your-project-id"
+SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/your-project-id"
+MINTER_PRIVATE_KEY="0x...private-key-of-minter-wallet"
+ECO_TOKEN_CONTRACT="0x...deployed-erc20-contract-address"
 ```
 
 ### `apps/admin/.env`
@@ -217,3 +225,20 @@ Clear the Turbo cache if you encounter stale build artifacts:
 pnpm turbo clean
 pnpm dev
 ```
+
+### MetaMask Not Connecting
+
+Ensure the MetaMask browser extension is installed and unlocked. The app uses the Sepolia testnet — you may need to add Sepolia to MetaMask:
+
+1. Open MetaMask → Settings → Networks → Add Network
+2. Select "Sepolia" from the list of test networks
+3. Switch to Sepolia in the network dropdown
+
+### Token Minting Fails
+
+If the `mint-eco-tokens` Inngest function fails:
+
+1. Verify `MINTER_PRIVATE_KEY` corresponds to an account with minter role on the EcoToken contract
+2. Ensure the minter wallet has Sepolia ETH for gas (use a [Sepolia faucet](https://sepoliafaucet.com/))
+3. Confirm `ECO_TOKEN_CONTRACT` is the correct deployed contract address
+4. Check the Inngest dev server at `http://localhost:8288` for detailed error logs

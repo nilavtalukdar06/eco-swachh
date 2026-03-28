@@ -17,6 +17,7 @@ Detailed documentation for every feature module in the EcoSwachh platform.
 - [9. Admin — Report Management](#9-admin--report-management)
 - [10. Admin — Complaint Management](#10-admin--complaint-management)
 - [11. Admin — User Management](#11-admin--user-management)
+- [12. Web3 Wallet & EcoToken Minting](#12-web3-wallet--ecotoken-minting)
 
 ---
 
@@ -298,3 +299,85 @@ if (role !== "admin") {
 ```
 
 This is in addition to the `protectedProcedure` middleware that validates session authentication.
+
+---
+
+## 12. Web3 Wallet & EcoToken Minting
+
+**Feature path:** `features/wallet/` + `jobs/mint-tokens.ts`
+
+### Overview
+Web3 integration that allows users to connect their Ethereum wallet (MetaMask) and receive ERC-20 EcoTokens on the Sepolia testnet as blockchain-backed rewards for their waste management contributions.
+
+### Wallet Connection Flow
+
+1. **Connect** — User clicks the wallet button in the navbar, chooses MetaMask or an injected provider
+2. **Persist** — Once connected, the wallet address is automatically saved to the `User.walletAddress` field via `wallet.saveWalletAddress` tRPC mutation
+3. **Display** — The navbar shows a truncated address (e.g., `0x1234...5678`) with a green connection indicator
+4. **Network Check** — Warns the user if they're not on the Sepolia testnet (chain ID `11155111`)
+5. **Disconnect** — User can disconnect at any time
+
+### EcoToken Minting Pipeline (Inngest)
+
+When a report is resolved by an admin, the platform can trigger an on-chain ERC-20 token mint:
+
+| Step | Name | Description |
+|---|---|---|
+| 1 | `get-user-wallet` | Fetches the user's stored `walletAddress` from the database |
+| 2 | `mint-on-chain` | Creates an ethers.js signer, calls `contract.mint(address, amount)` on the EcoToken contract |
+
+> If the user has not connected a wallet, the minting is skipped gracefully.
+
+### Token Minting Sequence
+
+```mermaid
+sequenceDiagram
+    participant Inngest
+    participant DB as PostgreSQL
+    participant Ethers as ethers.js Signer
+    participant Sepolia as Ethereum Sepolia
+
+    Inngest->>DB: Get user walletAddress
+    alt No Wallet
+        DB-->>Inngest: null
+        Inngest-->>Inngest: Skip (no wallet connected)
+    else Has Wallet
+        DB-->>Inngest: walletAddress
+        Inngest->>Ethers: Create signer from MINTER_PRIVATE_KEY
+        Ethers->>Sepolia: contract.mint(walletAddress, amount)
+        Sepolia-->>Ethers: Transaction receipt
+        Ethers-->>Inngest: txHash
+    end
+```
+
+### Architecture
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Frontend** | wagmi v3 | React hooks: `useAccount`, `useConnect`, `useConnectors`, `useDisconnect` |
+| **Connectors** | `injected()`, `metaMask()` | Browser-based wallet providers |
+| **Provider** | `WagmiClientProvider` | Wraps app in `WagmiProvider` + `QueryClientProvider` |
+| **Chain** | Sepolia (chain ID 11155111) | Ethereum testnet for development |
+| **Backend** | ethers.js v6 | Server-side contract interaction via `JsonRpcProvider` + `Wallet` signer |
+| **Contract** | ERC-20 (`mint` function) | Custom EcoToken with admin-controlled minting |
+| **Orchestration** | Inngest (`token/mint` event) | Durable background minting with 3 retries |
+
+### Key Files
+
+| File | Purpose |
+|---|---|
+| `lib/wagmi.ts` | wagmi config: Sepolia chain, injected + MetaMask connectors, HTTP transport |
+| `lib/wagmi-provider.tsx` | `WagmiClientProvider` — React context wrapper |
+| `features/wallet/ui/connect-wallet-button.tsx` | `ConnectWalletButton` — navbar wallet UI |
+| `features/wallet/server/wallet-procedures.ts` | `walletRouter` — `saveWalletAddress` + `getWalletAddress` |
+| `jobs/mint-tokens.ts` | `mintEcoTokens` — Inngest function for on-chain minting |
+| `app/layout.tsx` | Root layout wrapping app in `WagmiClientProvider` |
+
+### Environment Variables Required
+
+| Variable | Scope | Description |
+|---|---|---|
+| `NEXT_PUBLIC_SEPOLIA_RPC_URL` | Client | Public RPC URL for wagmi HTTP transport |
+| `SEPOLIA_RPC_URL` | Server | RPC URL for ethers.js `JsonRpcProvider` |
+| `MINTER_PRIVATE_KEY` | Server | Private key of the wallet authorized to mint tokens |
+| `ECO_TOKEN_CONTRACT` | Server | Deployed ERC-20 EcoToken contract address on Sepolia |

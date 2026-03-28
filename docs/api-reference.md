@@ -20,6 +20,7 @@ appRouter = {
   leaderboard: leaderboardRouter, // Community rankings
   reports:     reportRouter,      // Waste report CRUD + AI pipeline
   dashboard:   dashboardRouter,   // Aggregated user metrics
+  wallet:      walletRouter,      // Web3 wallet management
 };
 ```
 
@@ -148,6 +149,21 @@ appRouter = {
 
 ---
 
+### `wallet` Router
+
+| Procedure | Type | Auth | Input | Output |
+|---|---|---|---|---|
+| `wallet.saveWalletAddress` | `mutation` | ✅ Protected | `{ walletAddress: string (Ethereum 0x address) }` | `{ success: boolean }` |
+| `wallet.getWalletAddress` | `query` | ✅ Protected | _none_ | `{ walletAddress: string \| null }` |
+
+**Input validation:**
+- `walletAddress` must match `/^0x[a-fA-F0-9]{40}$/` (valid Ethereum address)
+
+**Side effects of `wallet.saveWalletAddress`:**
+- Updates the authenticated user's `walletAddress` field in the database
+
+---
+
 ## Admin App API (`apps/admin`)
 
 Base URL: `http://localhost:5174/api/trpc`
@@ -256,3 +272,37 @@ In addition to tRPC, the following REST API routes exist:
   priority: "LOW" | "MEDIUM" | "HIGH";
 }
 ```
+
+### `mint-eco-tokens` Function
+
+**Trigger:** `token/mint` event
+**Retries:** 3
+
+**Event data:**
+```ts
+{
+  userId: string;   // User to receive tokens
+  amount: number;   // Token amount to mint
+}
+```
+
+**Steps:**
+
+| Step | Name | Description |
+|---|---|---|
+| 1 | `get-user-wallet` | Queries `User.walletAddress` from database. If null, returns `{ skipped: true }` |
+| 2 | `mint-on-chain` | Creates ethers.js `JsonRpcProvider` + `Wallet` signer, calls `contract.mint(walletAddress, amount)` on the deployed ERC-20 contract |
+
+**Return shape:**
+```ts
+// Success
+{ success: true, txHash: string, amount: number, userId: string }
+
+// Skipped (no wallet)
+{ skipped: true, reason: "User has not connected a wallet" }
+```
+
+**Environment variables used:**
+- `SEPOLIA_RPC_URL` — RPC endpoint for ethers.js provider
+- `MINTER_PRIVATE_KEY` — Private key of the minter wallet
+- `ECO_TOKEN_CONTRACT` — Deployed ERC-20 contract address

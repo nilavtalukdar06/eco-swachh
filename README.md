@@ -14,6 +14,7 @@
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript" />
   <img alt="Prisma" src="https://img.shields.io/badge/Prisma-7-2d3748?logo=prisma" />
   <img alt="tRPC" src="https://img.shields.io/badge/tRPC-11-398ccb?logo=trpc" />
+  <img alt="Ethereum" src="https://img.shields.io/badge/Ethereum-Sepolia-627eea?logo=ethereum" />
   <img alt="Turborepo" src="https://img.shields.io/badge/Turborepo-2.8-ef4444?logo=turborepo" />
   <img alt="License" src="https://img.shields.io/badge/license-MIT-green" />
 </p>
@@ -24,7 +25,7 @@
 
 **EcoSwachh** is a production-grade, AI-integrated waste management platform built as a Turborepo monorepo. It provides a user-facing web app for waste reporting, environmental intelligence, and community engagement, alongside an admin portal for report management, complaint resolution, and user moderation.
 
-The platform leverages **GPT-5 Mini** for AI-powered spam detection and waste classification, **Inngest** for asynchronous background job processing, **Mapbox GL** for 3D geospatial visualization, and **Upstash Redis** for intelligent caching — all orchestrated through a type-safe **tRPC** API layer.
+The platform leverages **GPT-5 Mini** for AI-powered spam detection and waste classification, **Inngest** for asynchronous background job processing, **Mapbox GL** for 3D geospatial visualization, **Upstash Redis** for intelligent caching, and **Web3 wallet integration** (wagmi v3 + ethers.js) for on-chain ERC-20 EcoToken minting on the Ethereum Sepolia testnet — all orchestrated through a type-safe **tRPC** API layer.
 
 ---
 
@@ -43,6 +44,8 @@ The platform leverages **GPT-5 Mini** for AI-powered spam detection and waste cl
 | **📈 Green Stocks** | Live sustainability stock tracker (10 green energy companies) via Finnhub API |
 | **🏆 Leaderboard** | Community points leaderboard ranked by contributions with paginated data tables |
 | **📝 Complaints** | Submit and track complaints with status management (Pending/Resolved) |
+| **🔗 Web3 Wallet** | MetaMask wallet connection via wagmi v3 with automatic address persistence to database |
+| **🪙 EcoToken Minting** | Automatic ERC-20 token minting on Ethereum Sepolia when reports are resolved (Inngest background job) |
 | **🔐 Authentication** | Email/password auth via Better Auth with role-based access control (user/admin) |
 | **🎨 Theming** | Dark/light mode with `next-themes` and a custom Shadcn UI design system |
 
@@ -90,6 +93,15 @@ The platform leverages **GPT-5 Mini** for AI-powered spam detection and waste cl
 | [Firecrawl](https://firecrawl.dev/) | Web scraping API for sustainability news aggregation |
 | [Electricity Maps API](https://electricitymap.org/) | Real-time carbon intensity data for Indian grid zones |
 | [Finnhub API](https://finnhub.io/) | Live stock market data for green energy companies |
+
+### Web3 & Blockchain
+
+| Technology | Purpose |
+|---|---|
+| [wagmi](https://wagmi.sh/) v3 | React hooks for Ethereum wallet connection |
+| [ethers.js](https://docs.ethers.org/) v6 | Ethereum library for smart contract interaction & token minting |
+| [MetaMask](https://metamask.io/) | Primary wallet connector (injected + MetaMask providers) |
+| [Ethereum Sepolia](https://sepolia.dev/) | Testnet for ERC-20 EcoToken contract deployment |
 
 ### Frontend & UI
 
@@ -144,17 +156,21 @@ waste-management-app/
 │   │   │   ├── leaderboard/          # Leaderboard (server + UI)
 │   │   │   ├── news/                 # News feed + AI summary (server + UI + prompts)
 │   │   │   ├── report/               # Waste reports (server + UI + prompts)
-│   │   │   └── stocks/               # Green stocks (server + UI)
+│   │   │   ├── stocks/               # Green stocks (server + UI)
+│   │   │   └── wallet/               # Web3 wallet connection (server + UI)
 │   │   ├── hooks/                    # Global React hooks
 │   │   ├── jobs/                     # Inngest background jobs
 │   │   │   ├── client.ts             # Inngest client instance
-│   │   │   └── process-report.ts     # AI report processing pipeline
+│   │   │   ├── process-report.ts     # AI report processing pipeline
+│   │   │   └── mint-tokens.ts        # ERC-20 EcoToken minting pipeline
 │   │   ├── lib/                      # Shared utilities
 │   │   │   ├── auth.ts               # Better Auth server config
 │   │   │   ├── auth-client.ts        # Better Auth client instance
 │   │   │   ├── firecrawl.ts          # Firecrawl API client
-│   │   │   └── redis.ts              # Upstash Redis client
-│   │   └── public/                   # Static assets (logo, icons)
+│   │   │   ├── redis.ts              # Upstash Redis client
+│   │   │   ├── wagmi.ts              # wagmi config (Sepolia chain + connectors)
+│   │   │   └── wagmi-provider.tsx     # WagmiProvider + QueryClientProvider
+│   │   └── public/                   # Static assets (logo, icons, metamask.svg)
 │   │
 │   └── admin/                        # Admin portal Next.js application (port 5174)
 │       ├── app/                      # Next.js App Router (same structure as web)
@@ -210,7 +226,7 @@ waste-management-app/
 
 ## 🗄️ Database Schema
 
-The application uses **PostgreSQL** managed through **Prisma ORM** with 8 models and 3 enums:
+The application uses **PostgreSQL** managed through **Prisma ORM** with 8 models and 3 enums. The `User` model includes an optional `walletAddress` field for Web3 wallet integration:
 
 ### Entity-Relationship Diagram
 
@@ -235,6 +251,7 @@ erDiagram
         Boolean banned
         String banReason
         DateTime banExpires
+        String walletAddress "optional Ethereum address"
         DateTime createdAt
         DateTime updatedAt
     }
@@ -338,7 +355,9 @@ erDiagram
 - **pnpm** 9.15+
 - **PostgreSQL** database
 - **Upstash Redis** instance
+- **MetaMask** browser extension (for Web3 wallet features)
 - API keys for: OpenAI, Mapbox, ImageKit, Firecrawl, Electricity Maps, Finnhub
+- Sepolia testnet RPC URL and an ERC-20 token contract (for Web3 minting)
 
 ### 1. Clone & Install
 
@@ -394,6 +413,12 @@ FINNHUB_API_KEY="your-finnhub-key"
 # Inngest
 INNGEST_EVENT_KEY="your-key"
 INNGEST_SIGNING_KEY="your-key"
+
+# Web3 (Wallet & Token Minting)
+NEXT_PUBLIC_SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/your-infura-key"
+SEPOLIA_RPC_URL="https://sepolia.infura.io/v3/your-infura-key"
+MINTER_PRIVATE_KEY="0x...your-minter-wallet-private-key"
+ECO_TOKEN_CONTRACT="0x...your-deployed-erc20-contract-address"
 ```
 
 **`apps/admin/.env`**
@@ -454,10 +479,11 @@ graph TB
     subgraph "Client Layer"
         WEB["Web App<br/>(Next.js 16 — Port 5173)"]
         ADMIN["Admin Portal<br/>(Next.js 16 — Port 5174)"]
+        METAMASK["MetaMask<br/>(wagmi v3)"]
     end
 
     subgraph "API Layer"
-        TRPC1["tRPC Router<br/>(8 sub-routers)"]
+        TRPC1["tRPC Router<br/>(9 sub-routers)"]
         TRPC2["tRPC Router<br/>(3 sub-routers)"]
         AUTH["Better Auth<br/>(Role-based)"]
     end
@@ -465,6 +491,7 @@ graph TB
     subgraph "Processing Layer"
         INNGEST["Inngest<br/>(Durable Functions)"]
         AI["OpenAI GPT-5 Mini<br/>(Spam + Analysis)"]
+        MINT["EcoToken Minter<br/>(ethers.js v6)"]
     end
 
     subgraph "Data Layer"
@@ -480,8 +507,13 @@ graph TB
         FINNHUB["Finnhub"]
     end
 
+    subgraph "Blockchain"
+        SEPOLIA["Ethereum Sepolia<br/>(ERC-20 EcoToken)"]
+    end
+
     WEB --> TRPC1
     WEB --> AUTH
+    WEB --> METAMASK
     ADMIN --> TRPC2
     ADMIN --> AUTH
     TRPC1 --> PG
@@ -490,6 +522,8 @@ graph TB
     TRPC1 --> INNGEST
     INNGEST --> AI
     INNGEST --> PG
+    INNGEST --> MINT
+    MINT --> SEPOLIA
     WEB --> MAPBOX
     WEB --> IMAGEKIT
     TRPC1 --> FIRECRAWL

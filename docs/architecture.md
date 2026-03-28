@@ -16,7 +16,7 @@ graph TB
 
     subgraph "API Gateway"
         direction LR
-        TRPC_WEB["tRPC Router<br/>(Web — 8 routers)"]
+        TRPC_WEB["tRPC Router<br/>(Web — 9 routers)"]
         TRPC_ADMIN["tRPC Router<br/>(Admin — 3 routers)"]
         BA["Better Auth<br/>(RBAC)"]
     end
@@ -50,10 +50,17 @@ graph TB
         FINNHUB["Finnhub API"]
     end
 
+    subgraph "Web3 Layer"
+        WAGMI["wagmi v3<br/>(MetaMask + Injected)"]
+        ETHERS["ethers.js v6<br/>(Signer + Contract)"]
+        SEPOLIA["Ethereum Sepolia<br/>(ERC-20 EcoToken)"]
+    end
+
     WEB --> TRPC_WEB
     WEB --> BA
     WEB --> MAPBOX
     WEB --> IMAGEKIT
+    WEB --> WAGMI
     ADMIN --> TRPC_ADMIN
     ADMIN --> BA
 
@@ -79,6 +86,10 @@ graph TB
     REDIS --> SUMMARY_CACHE
 
     PRISMA --> PG
+
+    INNGEST_ENGINE --> ETHERS
+    ETHERS --> SEPOLIA
+    WAGMI --> SEPOLIA
 ```
 
 ---
@@ -265,3 +276,59 @@ All caching is handled through **Upstash Redis** with a read-through caching pat
 | **CSRF Protection** | Cookie-prefix scoping (`web` vs `admin`) |
 | **Spam Prevention** | AI-powered spam detection on report submissions |
 | **User Moderation** | Admin can ban/unban users with reason tracking |
+
+---
+
+## Web3 Wallet Connection Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser
+    participant MetaMask
+    participant Wagmi as wagmi v3
+    participant TRPC as tRPC API
+    participant DB as PostgreSQL
+
+    User->>Browser: Click "Connect Wallet"
+    Browser->>Wagmi: connect({ connector: metaMask })
+    Wagmi->>MetaMask: Request accounts
+    MetaMask-->>User: Approve connection popup
+    User->>MetaMask: Approve
+    MetaMask-->>Wagmi: wallet address
+    Wagmi-->>Browser: { address, isConnected: true }
+
+    Note over Browser: Auto-save on connect
+    Browser->>TRPC: wallet.saveWalletAddress({ walletAddress })
+    TRPC->>DB: UPDATE user SET walletAddress
+    DB-->>TRPC: Updated user
+    TRPC-->>Browser: { success: true }
+
+    Browser-->>User: Show truncated address + green indicator
+```
+
+## EcoToken Minting Pipeline
+
+```mermaid
+sequenceDiagram
+    participant Inngest
+    participant DB as PostgreSQL
+    participant Ethers as ethers.js Signer
+    participant Sepolia as Ethereum Sepolia
+    participant Contract as ERC-20 EcoToken
+
+    Note over Inngest: Triggered by "token/mint" event
+    Inngest->>DB: Step 1: get-user-wallet
+    DB-->>Inngest: { walletAddress }
+
+    alt No Wallet Connected
+        Inngest-->>Inngest: Return { skipped: true }
+    else Wallet Available
+        Inngest->>Ethers: Step 2: Create signer (MINTER_PRIVATE_KEY)
+        Ethers->>Contract: mint(walletAddress, amount)
+        Contract->>Sepolia: Execute transaction
+        Sepolia-->>Contract: Transaction receipt
+        Contract-->>Ethers: txHash
+        Ethers-->>Inngest: { success: true, txHash }
+    end
+```
