@@ -22,6 +22,7 @@ enum ReportStatus {
   PROCESSING
   SPAM
   PENDING
+  RESOLVED
 }
 
 model User {
