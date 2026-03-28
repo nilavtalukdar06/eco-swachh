@@ -30,11 +30,7 @@ function WalletOption({
   }, [connector]);
 
   return (
-    <Button
-      variant="outline"
-      disabled={!ready}
-      onClick={onClick}
-    >
+    <Button variant="outline" disabled={!ready} onClick={onClick}>
       <Image alt="metamask_logo" src="/metamask.svg" height={16} width={16} />
       {connector.name}
     </Button>
@@ -69,7 +65,7 @@ export function ConnectWalletButton() {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-green-500" />
-          <span className="text-sm font-mono text-muted-foreground">
+          <span className="text-sm font-mono text-muted-foreground max-sm:hidden">
             {address?.slice(0, 6)}...{address?.slice(-4)}
           </span>
           <Button variant="outline" onClick={() => disconnect()}>
