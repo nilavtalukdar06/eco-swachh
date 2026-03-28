@@ -58,6 +58,10 @@ export const reportRouter = createTRPCRouter({
           userId: opts.ctx.user.id,
         },
       });
+      await inngest.send({
+        name: "token/mint",
+        data: { userId: opts.ctx.user.id, amount: 10 },
+      });
 
       return { success: true, reportId: report.id };
     }),
