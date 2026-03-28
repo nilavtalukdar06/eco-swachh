@@ -27,7 +27,6 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -76,7 +75,7 @@ export function UserDataTable<TData, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <InputGroup className="max-w-sm">
           <InputGroupInput
             placeholder="Search by Name..."
