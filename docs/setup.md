@@ -1,112 +1,219 @@
-# Project Setup Documentation
+# 🚀 Setup & Deployment Guide
 
-This document describes the architecture, configuration, and tools used in this monorepo project.
+Complete setup instructions for development and production environments.
 
-## Overview
+---
 
-The project is structured as a monorepo using **pnpm workspaces** and **Turborepo**. It contains multiple applications and shared packages, streamlining the development, linting, formatting, and building processes.
+## Prerequisites
 
-- **Package Manager**: pnpm (v9.15.9)
-- **Node Version**: >= 20
-- **Build System**: Turbo (v2.8.20)
+| Requirement | Version | Purpose |
+|---|---|---|
+| **Node.js** | ≥ 20 | JavaScript runtime |
+| **pnpm** | 9.15+ | Package manager with workspace support |
+| **PostgreSQL** | 14+ | Primary database |
+| **Git** | 2.x | Version control |
 
-## Repository Structure
+### External Service Accounts Required
 
-The monorepo organizes code into `apps/` for applications and `packages/` for shared libraries and configurations:
+| Service | Purpose | Free Tier? |
+|---|---|---|
+| [OpenAI](https://platform.openai.com/) | AI waste analysis & spam detection | Pay-per-use |
+| [Upstash Redis](https://upstash.com/) | Serverless caching | ✅ Free tier (10k commands/day) |
+| [Mapbox](https://mapbox.com/) | Interactive maps & directions | ✅ Free tier (50k loads/month) |
+| [ImageKit](https://imagekit.io/) | Image upload & CDN | ✅ Free tier (20GB bandwidth) |
+| [Firecrawl](https://firecrawl.dev/) | Web scraping for news | ✅ Free tier (500 credits) |
+| [Electricity Maps](https://electricitymap.org/) | Carbon intensity data | ✅ Free tier (limited) |
+| [Finnhub](https://finnhub.io/) | Stock market data | ✅ Free tier (60 calls/min) |
+| [Inngest](https://inngest.com/) | Background job processing | ✅ Free tier (local dev free) |
 
+---
+
+## Step 1: Clone & Install
+
+```bash
+git clone https://github.com/nilavtalukdar06/waste-management-app.git
+cd waste-management-app
+pnpm install
 ```
-.
-├── apps/
-│   ├── admin/       # Next.js admin dashboard
-│   └── web/         # Next.js public-facing web app
-├── packages/
-│   ├── database/    # Prisma ORM and database configurations
-│   ├── eslint-config/      # Shared ESLint configuration
-│   ├── typescript-config/  # Shared TypeScript configuration
-│   └── ui/          # Shared UI components (shadcn/ui, Tailwind CSS)
-├── docs/            # Project documentation
-├── turbo.json       # Turborepo task pipeline configuration
-├── pnpm-workspace.yaml # pnpm workspaces definitions
-└── package.json     # Root dependencies and monorepo scripts
+
+---
+
+## Step 2: Environment Variables
+
+### `packages/database/.env`
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/ecoswachh?schema=public"
 ```
 
-## Applications
+### `apps/web/.env`
 
-### `apps/web`
+```env
+# ─── Authentication ──────────────────────────────────────────────
+BETTER_AUTH_SECRET="generate-a-random-secret-string"
+BETTER_AUTH_URL="http://localhost:5173"
 
-- **Framework**: Next.js 16.1.6 (App Router)
-- **React**: 19.2.4
-- **Dev Server**: Runs via Turbopack (`next dev --turbopack --port 3000`)
-- **Dependencies**: Uses internally shared packages (`@workspace/ui`, `@workspace/db`).
+# ─── Database ────────────────────────────────────────────────────
+DATABASE_URL="postgresql://username:password@localhost:5432/ecoswachh?schema=public"
 
-### `apps/admin`
+# ─── Upstash Redis ───────────────────────────────────────────────
+UPSTASH_REDIS_REST_URL="https://your-instance.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="AXxxxxxxxxxxxx"
 
-- **Framework**: Next.js 16.1.6 (App Router)
-- **React**: 19.2.4
-- **Dev Server**: Runs via Turbopack (`next dev --turbopack --port 3001`)
-- **Dependencies**: Uses internally shared packages (`@workspace/ui`, `@workspace/db`).
+# ─── OpenAI ──────────────────────────────────────────────────────
+OPENAI_API_KEY="sk-..."
 
-## Packages
+# ─── Mapbox ──────────────────────────────────────────────────────
+MAPBOX_PUBLIC_TOKEN="pk.eyJ1..."
 
-### `@workspace/db` (`packages/database`)
+# ─── ImageKit ────────────────────────────────────────────────────
+IMAGEKIT_PUBLIC_KEY="public_xxxx"
+IMAGEKIT_PRIVATE_KEY="private_xxxx"
+IMAGEKIT_URL_ENDPOINT="https://ik.imagekit.io/your-id"
 
-Provides the database schema, models, and Prisma client to the rest of the workspace.
+# ─── Firecrawl ───────────────────────────────────────────────────
+FIRECRAWL_API_URL="https://api.firecrawl.dev/v1/search"
+FIRECRAWL_API_KEY="fc-..."
 
-- **ORM**: Prisma (v7.5.0)
-- **Driver**: `@prisma/adapter-pg` and `pg` for PostgreSQL.
-- **Scripts**: Contains predefined scripts for generating the client, migrating the dev database, and deploying migrations (`db:generate`, `db:migrate`, `db:deploy`).
+# ─── Electricity Maps ───────────────────────────────────────────
+EM_API_KEY="your-electricity-maps-api-key"
 
-### `@workspace/ui` (`packages/ui`)
+# ─── Finnhub ────────────────────────────────────────────────────
+FINNHUB_API_KEY="your-finnhub-api-key"
 
-A shared component library built on top of Tailwind CSS and Radix UI primitives.
+# ─── Inngest ────────────────────────────────────────────────────
+INNGEST_EVENT_KEY="your-inngest-event-key"
+INNGEST_SIGNING_KEY="your-inngest-signing-key"
+```
 
-- **Styling**: Tailwind CSS v4 (via `@tailwindcss/postcss`) and `tw-animate-css`.
-- **Components**: Utilizes `shadcn` and `radix-ui` for accessible base components.
-- **Utilities**: Includes `tailwind-merge`, `clsx`, and `class-variance-authority` (cva) for dynamic styling and variants.
+### `apps/admin/.env`
 
-### `@workspace/typescript-config` (`packages/typescript-config`)
+```env
+# ─── Authentication ──────────────────────────────────────────────
+BETTER_AUTH_SECRET="same-secret-as-web-app"
+BETTER_AUTH_URL="http://localhost:5174"
 
-Centralized TypeScript configs for keeping TS rules consistent across apps and packages. Contains specialized configurations for:
+# ─── Database ────────────────────────────────────────────────────
+DATABASE_URL="postgresql://username:password@localhost:5432/ecoswachh?schema=public"
+```
 
-- `base.json`
-- `nextjs.json`
-- `react-library.json`
+> ⚠️ **Important:** Both apps must use the **same `DATABASE_URL`** and the **same `BETTER_AUTH_SECRET`** to share the user base.
 
-### `@workspace/eslint-config` (`packages/eslint-config`)
+---
 
-Centralized ESLint configurations for automatic linting across all workspace projects.
-Contains specialized configurations for:
+## Step 3: Database Setup
 
-- `base.js`
-- `next.js`
-- `react-internal.js`
+```bash
+# Generate Prisma client from schema
+pnpm --filter @workspace/db db:generate
 
-## root `tsconfig.json` Setup
+# Create database tables (development migrations)
+pnpm --filter @workspace/db db:migrate
+```
 
-The root `tsconfig.json` only extends from the centralized `typescript-config` base rules:
+### Creating an Admin User
+
+After setting up the database and creating a regular user account through the web app:
+
+1. Connect to your PostgreSQL database
+2. Update the user's role to `admin`:
+
+```sql
+UPDATE "user" SET role = 'admin' WHERE email = 'your-admin@email.com';
+```
+
+3. Log in to the admin portal at `http://localhost:5174` with those credentials
+
+---
+
+## Step 4: Run Development Servers
+
+```bash
+# Start all apps simultaneously with Turbopack
+pnpm dev
+```
+
+This starts:
+- **Web App:** [http://localhost:5173](http://localhost:5173)
+- **Admin Portal:** [http://localhost:5174](http://localhost:5174)
+
+### Running Individual Apps
+
+```bash
+# Web app only
+pnpm --filter web dev
+
+# Admin app only
+pnpm --filter admin dev
+```
+
+### Running Inngest Dev Server (Optional)
+
+For local background job testing:
+
+```bash
+npx inngest-cli@latest dev
+```
+
+This starts the Inngest dev server at `http://localhost:8288` where you can monitor background functions.
+
+---
+
+## Step 5: Production Build
+
+```bash
+# Build all packages and apps
+pnpm build
+
+# Deploy database migrations
+pnpm --filter @workspace/db db:deploy
+```
+
+### Production Environment Variables
+
+Update `BETTER_AUTH_URL` in both apps to point to your production domains:
+
+```env
+# apps/web/.env.production
+BETTER_AUTH_URL="https://your-web-domain.com"
+
+# apps/admin/.env.production
+BETTER_AUTH_URL="https://your-admin-domain.com"
+```
+
+---
+
+## Common Issues
+
+### Prisma Client Not Generated
+
+If you see errors about missing Prisma types:
+
+```bash
+pnpm --filter @workspace/db db:generate
+```
+
+### Database Connection Failed
+
+Ensure PostgreSQL is running and the `DATABASE_URL` is correct. Test with:
+
+```bash
+psql "postgresql://username:password@localhost:5432/ecoswachh"
+```
+
+### Port Conflicts
+
+The apps use ports 5173 (web) and 5174 (admin). If these are in use, modify the `dev` script in each app's `package.json`:
 
 ```json
-{
-  "extends": "@workspace/typescript-config/base.json"
-}
+"dev": "next dev --turbopack --port YOUR_PORT"
 ```
 
-## Turborepo Configuration (`turbo.json`)
+### Turbopack Cache Issues
 
-The `turbo.json` handles task orchestration for ensuring tasks run in the correct order, leveraging caching where possible:
+Clear the Turbo cache if you encounter stale build artifacts:
 
-- **`build`**: Depends on previous pipeline builds (`^build`) and database generation (`^db:generate`). Caches `.next/**` folders.
-- **`dev`**: Persistent task ensuring `db:generate` is executed before starting Next.js dev servers.
-- **Linting & Formatting**: Independent tasks for `lint`, `format`, and `typecheck`.
-- **Database Scripts**: `db:generate`, `db:migrate`, and `db:deploy` tasks have cache intentionally disabled to ensure accurate execution on every run.
-- **Env**: Exposes `DATABASE_URL` safely to global tools.
-
-## Scripts (Root `package.json`)
-
-Run these from the root to orchestrate changes across the monorepo:
-
-- `pnpm dev`: Runs `dev` across all apps (Web, Admin) utilizing the dependency tree.
-- `pnpm build`: Triggers optimized builds for all apps.
-- `pnpm lint`: Triggers ESLint across all apps and packages.
-- `pnpm format`: Runs Prettier.
-- `pnpm typecheck`: Triggers `tsc --noEmit`.
+```bash
+pnpm turbo clean
+pnpm dev
+```
