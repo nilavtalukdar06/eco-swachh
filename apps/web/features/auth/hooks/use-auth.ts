@@ -2,6 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useDisconnect } from "wagmi";
 
 interface Auth {
   name?: string;
@@ -66,6 +67,7 @@ export function useRegister() {
 }
 
 export function useLogout() {
+  const { disconnect } = useDisconnect();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const logout = async () => {
@@ -76,6 +78,7 @@ export function useLogout() {
         },
         onSuccess: () => {
           setIsLoading(false);
+          disconnect();
           router.replace("/auth/login");
         },
         onError: (ctx) => {
