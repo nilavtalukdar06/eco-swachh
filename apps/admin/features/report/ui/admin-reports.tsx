@@ -35,7 +35,7 @@ export const statusParser = parseAsStringEnum([
 ]);
 export const priorityParser = parseAsStringEnum(["LOW", "MEDIUM", "HIGH"]);
 
-type ReportWithUser = Report & { user: User };
+type ReportWithUser = Report & { user: User; spamReports?: { spamReason: string } | null };
 
 const PRIORITY_STYLES: Record<string, string> = {
   LOW: "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400",
@@ -166,7 +166,7 @@ function AdminReportCard({ report }: { report: ReportWithUser }) {
       <div className="relative w-full h-32 overflow-hidden">
         <Image
           src={report.imageUrl}
-          alt={report.aiTitle || "Waste report"}
+          alt={report.status === "SPAM" ? "Spam Report" : (report.aiTitle || "Waste report")}
           fill
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -192,10 +192,12 @@ function AdminReportCard({ report }: { report: ReportWithUser }) {
           )}
         </div>
         <CardTitle className="text-sm line-clamp-1">
-          {report.aiTitle || "Untitled Report"}
+          {report.status === "SPAM" ? "Spam Report" : (report.aiTitle || "Untitled Report")}
         </CardTitle>
         <CardDescription className="text-xs line-clamp-2">
-          {report.aiDescription || report.userDescription}
+          {report.status === "SPAM"
+            ? report.spamReports?.spamReason || "Identified as spam"
+            : (report.aiDescription || report.userDescription)}
         </CardDescription>
         <div className="flex flex-col gap-1 text-xs text-muted-foreground border-t pt-2">
           <p>

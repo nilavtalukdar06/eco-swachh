@@ -80,6 +80,9 @@ export const reportRouter = createTRPCRouter({
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE + 1,
+        include: {
+          spamReports: true,
+        },
         ...(cursor
           ? { cursor: { id: cursor }, skip: 1 }
           : {}),
@@ -104,6 +107,9 @@ export const reportRouter = createTRPCRouter({
         where: {
           id: opts.input.reportId,
           userId: opts.ctx.user.id,
+        },
+        include: {
+          spamReports: true,
         },
       });
       return report;

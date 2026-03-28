@@ -2,7 +2,6 @@
 
 import { useTRPC } from "@/dal/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Report } from "@workspace/db";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -186,13 +185,13 @@ function ProcessingCard() {
   );
 }
 
-function ReportCard({ report }: { report: Report }) {
+function ReportCard({ report }: { report: any }) {
   return (
     <Card className="h-full overflow-hidden group pt-0 bg-sidebar">
       <div className="relative w-full h-32 overflow-hidden">
         <Image
           src={report.imageUrl}
-          alt={report.aiTitle || "Waste report"}
+          alt={report.status === "SPAM" ? "Spam Report" : (report.aiTitle || "Waste report")}
           fill
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -218,10 +217,12 @@ function ReportCard({ report }: { report: Report }) {
           )}
         </div>
         <CardTitle className="text-sm line-clamp-1">
-          {report.aiTitle || "Untitled Report"}
+          {report.status === "SPAM" ? "Spam Report" : (report.aiTitle || "Untitled Report")}
         </CardTitle>
         <CardDescription className="text-xs line-clamp-2">
-          {report.aiDescription || report.userDescription}
+          {report.status === "SPAM" 
+            ? report.spamReports?.spamReason || "Identified as spam"
+            : (report.aiDescription || report.userDescription)}
         </CardDescription>
         <Link href={`/my-reports/${report.id}`}>
           <Button size="sm" className="w-fit mt-2">

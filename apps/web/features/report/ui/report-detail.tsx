@@ -92,7 +92,7 @@ export function ReportDetail({ reportId }: { reportId: string }) {
             <ArrowLeft weight="bold" />
           </Button>
           <div>
-            <h1 className="text-lg font-medium">{report.aiTitle}</h1>
+            <h1 className="text-lg font-medium">{report.status === "SPAM" ? "Spam Report" : report.aiTitle}</h1>
             <p className="text-xs text-muted-foreground">
               Submitted {format(new Date(report.createdAt), "PPPp")}
             </p>
@@ -145,14 +145,18 @@ export function ReportDetail({ reportId }: { reportId: string }) {
         >
           {report.status}
         </Badge>
-        <Badge
-          variant="outline"
-          className={cn("border-0", PRIORITY_STYLES[report.priority])}
-        >
-          {report.priority} Priority
-        </Badge>
-        <Badge variant="outline">{report.wasteType}</Badge>
-        <Badge variant="secondary">~{report.estimatedWeight} kg</Badge>
+        {report.status !== "SPAM" && (
+          <>
+            <Badge
+              variant="outline"
+              className={cn("border-0", PRIORITY_STYLES[report.priority])}
+            >
+              {report.priority} Priority
+            </Badge>
+            <Badge variant="outline">{report.wasteType}</Badge>
+            <Badge variant="secondary">~{report.estimatedWeight} kg</Badge>
+          </>
+        )}
       </div>
       <div className="relative w-full h-64 sm:h-80 overflow-hidden border">
         <Image
@@ -165,42 +169,51 @@ export function ReportDetail({ reportId }: { reportId: string }) {
       <div>
         <h3 className="text-sm mb-4">Report Details</h3>
 
-        <div className="space-y-5 text-sm text-muted-foreground">
-          <div>
-            <p className="text-foreground mb-1">AI Analysis</p>
-            <p className="font-light">{report.aiDescription}</p>
-          </div>
-          <div>
-            <p className="text-foreground mb-1">Waste Details</p>
-            <p className="font-light">{report.wasteDetails}</p>
-          </div>
-          <div className="p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950">
-            <p className="text-destructive mb-1">⚠ Warnings</p>
-            <p className="text-destructive font-light">{report.warnings}</p>
-          </div>
-          <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950">
-            <p className="mb-1 text-green-600">Disposal Instructions</p>
-            <p className="text-green-500 font-light">
-              {report.disposalInstructions}
-            </p>
-          </div>
-          {(hasCoordinates || report.manualLocation) && (
+        {report.status === "SPAM" ? (
+          <div className="space-y-5 text-sm text-muted-foreground">
             <div>
-              <p className="font-medium text-foreground mb-1 flex items-center gap-2">
-                <MapPin weight="fill" className="text-primary" />
-                Location
-              </p>
-              {hasCoordinates ? (
-                <p>
-                  Coordinates: {report.latitude?.toFixed(6)},{" "}
-                  {report.longitude?.toFixed(6)}
-                </p>
-              ) : (
-                <p>{report.manualLocation}</p>
-              )}
+              <p className="text-foreground mb-1">Spam Reason</p>
+              <p className="font-light">{(report as any).spamReports?.spamReason || "Identified as spam"}</p>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="space-y-5 text-sm text-muted-foreground">
+            <div>
+              <p className="text-foreground mb-1">AI Analysis</p>
+              <p className="font-light">{report.aiDescription}</p>
+            </div>
+            <div>
+              <p className="text-foreground mb-1">Waste Details</p>
+              <p className="font-light">{report.wasteDetails}</p>
+            </div>
+            <div className="p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950">
+              <p className="text-destructive mb-1">⚠ Warnings</p>
+              <p className="text-destructive font-light">{report.warnings}</p>
+            </div>
+            <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950">
+              <p className="mb-1 text-green-600">Disposal Instructions</p>
+              <p className="text-green-500 font-light">
+                {report.disposalInstructions}
+              </p>
+            </div>
+            {(hasCoordinates || report.manualLocation) && (
+              <div>
+                <p className="font-medium text-foreground mb-1 flex items-center gap-2">
+                  <MapPin weight="fill" className="text-primary" />
+                  Location
+                </p>
+                {hasCoordinates ? (
+                  <p>
+                    Coordinates: {report.latitude?.toFixed(6)},{" "}
+                    {report.longitude?.toFixed(6)}
+                  </p>
+                ) : (
+                  <p>{report.manualLocation}</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -24,6 +24,7 @@ export const reportRouter = createTRPCRouter({
         },
         include: {
           user: true,
+          spamReports: true,
         },
         orderBy: { createdAt: "desc" },
         take: PAGE_SIZE + 1,
@@ -51,6 +52,7 @@ export const reportRouter = createTRPCRouter({
         },
         include: {
           user: true,
+          spamReports: true,
         },
       });
       return report;
