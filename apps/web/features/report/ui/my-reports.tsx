@@ -32,6 +32,7 @@ export const statusParser = parseAsStringEnum([
   "PROCESSING",
   "SPAM",
   "PENDING",
+  "RESOLVED",
 ]);
 export const priorityParser = parseAsStringEnum(["LOW", "MEDIUM", "HIGH"]);
 
@@ -77,7 +78,7 @@ export function MyReports() {
     (value: string) => {
       setCursor(null);
       setStatus(
-        value === "all" ? null : (value as "PROCESSING" | "SPAM" | "PENDING"),
+        value === "all" ? null : (value as "PROCESSING" | "SPAM" | "PENDING" | "RESOLVED"),
       );
     },
     [setCursor, setStatus],
@@ -107,6 +108,7 @@ export function MyReports() {
               <SelectItem value="PROCESSING">Processing</SelectItem>
               <SelectItem value="PENDING">Pending</SelectItem>
               <SelectItem value="SPAM">Spam</SelectItem>
+              <SelectItem value="RESOLVED">Resolved</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

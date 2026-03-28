@@ -65,7 +65,7 @@ export const reportRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(
       z.object({
-        status: z.enum(["PROCESSING", "SPAM", "PENDING"]).optional(),
+        status: z.enum(["PROCESSING", "SPAM", "PENDING", "RESOLVED"]).optional(),
         priority: z.enum(["LOW", "MEDIUM", "HIGH"]).optional(),
         cursor: z.string().optional(),
       }),
