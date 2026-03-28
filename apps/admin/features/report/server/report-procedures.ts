@@ -16,6 +16,13 @@ export const reportRouter = createTRPCRouter({
       }),
     )
     .query(async (opts) => {
+      const role = opts.ctx.auth?.user.role;
+      if (role !== "admin") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "only an admin can access this feature",
+        });
+      }
       const { status, priority, cursor } = opts.input;
       const items = await prisma.report.findMany({
         where: {
@@ -46,6 +53,13 @@ export const reportRouter = createTRPCRouter({
       }),
     )
     .query(async (opts) => {
+      const role = opts.ctx.auth?.user.role;
+      if (role !== "admin") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "only an admin can access this feature",
+        });
+      }
       const report = await prisma.report.findFirst({
         where: {
           id: opts.input.reportId,
@@ -69,6 +83,13 @@ export const reportRouter = createTRPCRouter({
       }),
     )
     .mutation(async (opts) => {
+      const role = opts.ctx.auth?.user.role;
+      if (role !== "admin") {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "only an admin can access this feature",
+        });
+      }
       const { reportId, comment } = opts.input;
       const adminId = opts.ctx.user.id;
 
