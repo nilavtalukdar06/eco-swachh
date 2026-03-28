@@ -92,7 +92,7 @@ export function MyReports() {
 
 function ProcessingCard() {
   return (
-    <Card className="h-full overflow-hidden animate-pulse">
+    <Card className="h-full overflow-hidden animate-pulse pt-0">
       <div className="w-full h-32 bg-muted" />
       <CardHeader>
         <div className="flex items-center gap-2 mb-2">
@@ -113,13 +113,13 @@ function ProcessingCard() {
 
 function ReportCard({ report }: { report: Report }) {
   return (
-    <Card className="h-full overflow-hidden group hover:shadow-md transition-shadow">
+    <Card className="h-full overflow-hidden group pt-0 bg-sidebar">
       <div className="relative w-full h-32 overflow-hidden">
         <Image
           src={report.imageUrl}
           alt={report.aiTitle || "Waste report"}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
       </div>
       <CardHeader className="space-y-2">
@@ -149,8 +149,8 @@ function ReportCard({ report }: { report: Report }) {
           {report.aiDescription || report.userDescription}
         </CardDescription>
         <Link href={`/my-reports/${report.id}`}>
-          <Button variant="outline" size="sm" className="w-full mt-2">
-            View Full Report
+          <Button size="sm" className="w-fit mt-2">
+            View Report
           </Button>
         </Link>
       </CardHeader>

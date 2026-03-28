@@ -9,12 +9,6 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import {
   Dialog,
   DialogClose,
   DialogContent,
@@ -158,7 +152,7 @@ export function ReportDetail({ reportId }: { reportId: string }) {
         <Badge variant="outline">{report.wasteType}</Badge>
         <Badge variant="secondary">~{report.estimatedWeight} kg</Badge>
       </div>
-      <div className="relative w-full h-64 sm:h-80 rounded-lg overflow-hidden border">
+      <div className="relative w-full h-64 sm:h-80 overflow-hidden border">
         <Image
           src={report.imageUrl}
           alt={report.aiTitle}
@@ -166,79 +160,45 @@ export function ReportDetail({ reportId }: { reportId: string }) {
           className="object-cover"
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">AI Analysis</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {report.aiDescription}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Your Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {report.userDescription}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Waste Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {report.wasteDetails}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">Disposal Instructions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
+      <div>
+        <h3 className="text-sm mb-4">Report Details</h3>
+
+        <div className="space-y-5 text-sm text-muted-foreground">
+          <div>
+            <p className="text-foreground mb-1">AI Analysis</p>
+            <p className="font-light">{report.aiDescription}</p>
+          </div>
+          <div>
+            <p className="text-foreground mb-1">Waste Details</p>
+            <p className="font-light">{report.wasteDetails}</p>
+          </div>
+          <div className="p-4 border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950">
+            <p className="text-destructive mb-1">⚠ Warnings</p>
+            <p className="text-destructive font-light">{report.warnings}</p>
+          </div>
+          <div className="p-4 border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950">
+            <p className="mb-1 text-green-600">Disposal Instructions</p>
+            <p className="text-green-500 font-light">
               {report.disposalInstructions}
             </p>
-          </CardContent>
-        </Card>
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-sm text-destructive">
-              ⚠ Warnings
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{report.warnings}</p>
-          </CardContent>
-        </Card>
-        {(hasCoordinates || report.manualLocation) && (
-          <Card className="md:col-span-2">
-            <CardHeader>
-              <CardTitle className="text-sm flex items-center gap-2">
+          </div>
+          {(hasCoordinates || report.manualLocation) && (
+            <div>
+              <p className="font-medium text-foreground mb-1 flex items-center gap-2">
                 <MapPin weight="fill" className="text-primary" />
                 Location
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
+              </p>
               {hasCoordinates ? (
-                <p className="text-sm text-muted-foreground">
+                <p>
                   Coordinates: {report.latitude?.toFixed(6)},{" "}
                   {report.longitude?.toFixed(6)}
                 </p>
               ) : (
-                <p className="text-sm text-muted-foreground">
-                  {report.manualLocation}
-                </p>
+                <p>{report.manualLocation}</p>
               )}
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
