@@ -28,7 +28,11 @@ import Image from "next/image";
 import { useCallback } from "react";
 
 export const cursorParser = parseAsString;
-export const statusParser = parseAsStringEnum(["PROCESSING", "SPAM", "PENDING"]);
+export const statusParser = parseAsStringEnum([
+  "PROCESSING",
+  "SPAM",
+  "PENDING",
+]);
 export const priorityParser = parseAsStringEnum(["LOW", "MEDIUM", "HIGH"]);
 
 const PRIORITY_STYLES: Record<string, string> = {
@@ -44,6 +48,8 @@ const STATUS_STYLES: Record<string, string> = {
   PENDING:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-950/40 dark:text-yellow-400",
   SPAM: "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
+  RESOLVED:
+    "bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400",
 };
 
 export function MyReports() {
@@ -70,7 +76,9 @@ export function MyReports() {
   const handleStatus = useCallback(
     (value: string) => {
       setCursor(null);
-      setStatus(value === "all" ? null : (value as "PROCESSING" | "SPAM" | "PENDING"));
+      setStatus(
+        value === "all" ? null : (value as "PROCESSING" | "SPAM" | "PENDING"),
+      );
     },
     [setCursor, setStatus],
   );
@@ -78,7 +86,9 @@ export function MyReports() {
   const handlePriority = useCallback(
     (value: string) => {
       setCursor(null);
-      setPriority(value === "all" ? null : (value as "LOW" | "MEDIUM" | "HIGH"));
+      setPriority(
+        value === "all" ? null : (value as "LOW" | "MEDIUM" | "HIGH"),
+      );
     },
     [setCursor, setPriority],
   );
