@@ -11,6 +11,12 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/dal/client";
 import { Button } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
 import Image from "next/image";
 
 function WalletOption({
@@ -34,6 +40,30 @@ function WalletOption({
       <Image alt="metamask_logo" src="/metamask.svg" height={16} width={16} />
       {connector.name}
     </Button>
+  );
+}
+
+function DropdownWalletOption({
+  connector,
+  onClick,
+}: {
+  connector: Connector;
+  onClick: () => void;
+}) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const provider = await connector.getProvider();
+      setReady(!!provider);
+    })();
+  }, [connector]);
+
+  return (
+    <DropdownMenuItem disabled={!ready} onClick={onClick}>
+      <Image alt="metamask_logo" src="/metamask.svg" height={16} width={16} className="mr-2" />
+      {connector.name}
+    </DropdownMenuItem>
   );
 }
 
@@ -82,14 +112,32 @@ export function ConnectWalletButton() {
   }
 
   return (
-    <div className="flex items-center gap-2">
-      {connectors.map((connector) => (
-        <WalletOption
-          key={connector.uid}
-          connector={connector}
-          onClick={() => connect({ connector })}
-        />
-      ))}
-    </div>
+    <>
+      <div className="hidden sm:flex items-center gap-2">
+        {connectors.map((connector) => (
+          <WalletOption
+            key={connector.uid}
+            connector={connector}
+            onClick={() => connect({ connector })}
+          />
+        ))}
+      </div>
+      <div className="flex sm:hidden items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline">Connect Wallet</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {connectors.map((connector) => (
+              <DropdownWalletOption
+                key={connector.uid}
+                connector={connector}
+                onClick={() => connect({ connector })}
+              />
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </>
   );
 }
