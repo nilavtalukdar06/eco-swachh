@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
 import React from "react";
+import { ConnectWalletButton } from "@/features/wallet/ui/connect-wallet-button";
 
 export function Navbar() {
   const { setTheme } = useTheme();
@@ -19,6 +20,7 @@ export function Navbar() {
     <header className="w-full flex justify-between items-center gap-2 p-2 border-b">
       <SidebarTrigger />
       <div className="flex justify-center items-center gap-x-2">
+        <ConnectWalletButton />
         <ThemeChanger setTheme={setTheme} />
         <LogoutButton />
       </div>

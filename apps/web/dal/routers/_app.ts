@@ -7,6 +7,7 @@ import { stockRouter } from "@/features/stocks/server/stock-procedures";
 import { leaderboardRouter } from "@/features/leaderboard/server/leaderboard-procedures";
 import { reportRouter } from "@/features/report/server/report-procedures";
 import { dashboardRouter } from "@/features/dashboard/server/dashboard-procedures";
+import { walletRouter } from "@/features/wallet/server/wallet-procedures";
 
 export const appRouter = createTRPCRouter({
   complaints: complaintRouter,
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   leaderboard: leaderboardRouter,
   reports: reportRouter,
   dashboard: dashboardRouter,
+  wallet: walletRouter
 });
 
 export type AppRouter = typeof appRouter;

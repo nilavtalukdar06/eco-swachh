@@ -5,6 +5,7 @@ import "@workspace/ui/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@workspace/ui/lib/utils";
 import { TRPCReactProvider } from "@/dal/client";
+import { WagmiClientProvider } from "@/lib/wagmi-provider";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -41,13 +42,15 @@ export default function RootLayout({
         jetbrainsMono.variable,
       )}
     >
-      <TRPCReactProvider>
-        <body>
-          <ThemeProvider>
-            <NuqsAdapter>{children}</NuqsAdapter>
-          </ThemeProvider>
-        </body>
-      </TRPCReactProvider>
+      <body>
+        <WagmiClientProvider>
+          <TRPCReactProvider>
+            <ThemeProvider>
+              <NuqsAdapter>{children}</NuqsAdapter>
+            </ThemeProvider>
+          </TRPCReactProvider>
+        </WagmiClientProvider>
+      </body>
     </html>
   );
 }

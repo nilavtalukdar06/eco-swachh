@@ -41,6 +41,7 @@ model User {
   reports            Report[]
   spamReports        SpamReport[]
   resolvedReports    ResolvedRerport[]
+  walletAddress      String?
 
   role       String?
   banned     Boolean?  @default(false)
