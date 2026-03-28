@@ -94,10 +94,10 @@ export const reportRouter = createTRPCRouter({
       const { reportId, comment } = opts.input;
       const adminId = opts.ctx.user.id;
 
-      // Fetch the report to get the userId for awarding points
+      // Fetch the report to check its current status
       const report = await prisma.report.findUnique({
         where: { id: reportId },
-        select: { userId: true, status: true },
+        select: { status: true },
       });
 
       if (!report) {
@@ -120,14 +120,6 @@ export const reportRouter = createTRPCRouter({
             reportId,
             userId: adminId,
             comment,
-          },
-        }),
-        prisma.user.update({
-          where: { id: report.userId },
-          data: {
-            points: {
-              increment: 20,
-            },
           },
         }),
       ]);

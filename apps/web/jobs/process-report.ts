@@ -110,6 +110,20 @@ export const processReport: any = inngest.createFunction(
           status: "PENDING",
         },
       });
+
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          points: {
+            increment: 10,
+          },
+        },
+      });
+    });
+
+    await step.sendEvent("mint-tokens", {
+      name: "token/mint",
+      data: { userId, amount: 10 },
     });
 
     return { status: "processed", reportId };

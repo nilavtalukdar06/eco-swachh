@@ -39,16 +39,6 @@ export const reportRouter = createTRPCRouter({
           warnings: "",
         },
       });
-      await prisma.user.update({
-        where: {
-          id: opts.ctx.user.id,
-        },
-        data: {
-          points: {
-            increment: 10,
-          },
-        },
-      });
       await inngest.send({
         name: "report/submitted",
         data: {
@@ -57,10 +47,6 @@ export const reportRouter = createTRPCRouter({
           userDescription: opts.input.userDescription,
           userId: opts.ctx.user.id,
         },
-      });
-      await inngest.send({
-        name: "token/mint",
-        data: { userId: opts.ctx.user.id, amount: 10 },
       });
 
       return { success: true, reportId: report.id };
