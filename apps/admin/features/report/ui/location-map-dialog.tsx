@@ -98,6 +98,7 @@ export function LocationMapDialog({
           directions.setOrigin([78.9629, 22.5937]);
           directions.setDestination([longitude!, latitude!]);
         },
+        { timeout: 5000, enableHighAccuracy: false }
       );
 
       map.on("style.load", () => {
@@ -130,10 +131,21 @@ export function LocationMapDialog({
       });
 
       mapRef.current = map;
+
+      // Ensure map resizes correctly on mobile and within dialogs
+      const resizeObserver = new ResizeObserver(() => {
+        map.resize();
+      });
+      resizeObserver.observe(mapContainer.current);
+
+      // Clean up observer when map is destroyed
+      map.on('remove', () => {
+        resizeObserver.disconnect();
+      });
     };
 
     frameId = requestAnimationFrame(() => {
-      timeoutId = setTimeout(initMap, 100);
+      timeoutId = setTimeout(initMap, 200); // slightly longer timeout for mobile dialog animation
     });
 
     return () => {
