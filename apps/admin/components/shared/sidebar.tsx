@@ -21,7 +21,10 @@ import { FaUserLock } from "react-icons/fa";
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/") return pathname === "/" || pathname.startsWith("/reports");
+    return pathname.startsWith(path);
+  };
 
   return (
     <Sidebar collapsible="icon">

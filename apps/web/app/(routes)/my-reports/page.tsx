@@ -1,10 +1,11 @@
 import { getQueryClient, trpc } from "@/dal/server";
+import { AddReport } from "@/features/report/ui/add-report";
 import {
-  AdminReports,
+  MyReports,
   cursorParser,
   statusParser,
   priorityParser,
-} from "@/features/report/ui/admin-reports";
+} from "@/features/report/ui/my-reports";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { ErrorBoundary } from "react-error-boundary";
@@ -19,7 +20,7 @@ const searchParamsCache = createSearchParamsCache({
   priority: priorityParser,
 });
 
-export default async function AllReportsPage({
+export default async function MyReportsPage({
   searchParams,
 }: {
   searchParams: Record<string, string | string[] | undefined>;
@@ -28,11 +29,11 @@ export default async function AllReportsPage({
   const queryClient = getQueryClient();
 
   if (result?.session) {
-    const { status, cursor, priority } = searchParamsCache.parse(searchParams);
+    const { cursor, status, priority } = searchParamsCache.parse(searchParams);
     void queryClient.prefetchQuery(
-      trpc.report.getAll.queryOptions({
-        status: status ?? undefined,
+      trpc.reports.getAll.queryOptions({
         cursor: cursor ?? undefined,
+        status: status ?? undefined,
         priority: priority ?? undefined,
       }),
     );
@@ -40,17 +41,18 @@ export default async function AllReportsPage({
 
   return (
     <div className="w-full p-4">
-      <div className="mb-4">
-        <h1 className="text-2xl font-semibold tracking-tight">All Reports</h1>
-        <p className="text-sm text-muted-foreground font-light max-w-lg mt-1">
-          View and manage waste reports submitted by users. Resolve reports to
-          award users 20 points.
-        </p>
+      <p className="text-lg">My Reports</p>
+      <p className="text-xs text-muted-foreground font-light max-w-lg">
+        Submit waste reports with photos and let our AI analyze them. Track your
+        submissions and contribute to cleaner communities.
+      </p>
+      <div className="my-2">
+        <AddReport />
       </div>
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ErrorBoundary fallback={<ErrorComponent />}>
           <Suspense fallback={<LoadingComponent />}>
-            <AdminReports />
+            <MyReports />
           </Suspense>
         </ErrorBoundary>
       </HydrationBoundary>
@@ -71,8 +73,12 @@ function ErrorComponent() {
 function LoadingComponent() {
   return (
     <div className="w-full my-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {Array.from({ length: 12 }).map((_, i) => (
-        <Skeleton className="w-full h-48" key={i} />
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <Skeleton className="w-full h-32" />
+          <Skeleton className="w-3/4 h-4" />
+          <Skeleton className="w-full h-3" />
+        </div>
       ))}
     </div>
   );
