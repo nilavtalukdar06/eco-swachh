@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Geist, JetBrains_Mono } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "@workspace/ui/globals.css";
@@ -15,6 +16,15 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
+
+export const metadata: Metadata = {
+  title: "EcoSwachh | Management Portal",
+  description:
+    "Administrative dashboard for monitoring waste reports and community impact.",
+  icons: {
+    icon: "/icon.svg",
+  },
+};
 
 export default function RootLayout({
   children,
