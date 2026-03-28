@@ -10,6 +10,10 @@ import {
   LeaderboardError,
   LeaderboardLoading,
 } from "./_components/leaderboard";
+import {
+  DashboardStatsError,
+  DashboardStatsLoading,
+} from "./_components/dashboard-stats";
 
 export default async function Home() {
   const queryClient = getQueryClient();
@@ -18,6 +22,7 @@ export default async function Home() {
   });
   if (result?.session) {
     void queryClient.prefetchQuery(trpc.leaderboard.getTopUsers.queryOptions());
+    void queryClient.prefetchQuery(trpc.dashboard.getStats.queryOptions());
   }
 
   return (
@@ -28,8 +33,12 @@ export default async function Home() {
         tracking reports, monitoring collection, and visualizing impact in real
         time across communities.
       </p>
-      <DashboardStats />
       <HydrationBoundary state={dehydrate(queryClient)}>
+        <ErrorBoundary fallback={<DashboardStatsError />}>
+          <Suspense fallback={<DashboardStatsLoading />}>
+            <DashboardStats />
+          </Suspense>
+        </ErrorBoundary>
         <ErrorBoundary fallback={<LeaderboardError />}>
           <Suspense fallback={<LeaderboardLoading />}>
             <LeaderboardTable />

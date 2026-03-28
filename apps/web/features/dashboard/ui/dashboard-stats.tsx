@@ -7,6 +7,8 @@ import {
   MapPinIcon,
   RecycleIcon,
 } from "@phosphor-icons/react";
+import { useTRPC } from "@/dal/client";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import {
   Card,
   CardDescription,
@@ -15,12 +17,15 @@ import {
 } from "@workspace/ui/components/card";
 
 export function DashboardStats() {
+  const trpc = useTRPC();
+  const { data } = useSuspenseQuery(trpc.dashboard.getStats.queryOptions());
+
   return (
     <div className="w-full my-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 place-items-center">
-      <StatusCard title="Reports Submitted" data="4" icon={MapPinIcon} />
-      <StatusCard title="Waste Reported" data="250kg" icon={RecycleIcon} />
-      <StatusCard title="Points Earned" data="45" icon={CoinsIcon} />
-      <StatusCard title="CO2 Offset" data="125" icon={LeafIcon} />
+      <StatusCard title="Reports Submitted" data={data.reportsSubmitted.toString()} icon={MapPinIcon} />
+      <StatusCard title="Waste Reported" data={data.wasteReported} icon={RecycleIcon} />
+      <StatusCard title="Points Earned" data={data.pointsEarned.toString()} icon={CoinsIcon} />
+      <StatusCard title="CO2 Offset" data={`${data.co2Offset}kg`} icon={LeafIcon} />
     </div>
   );
 }
